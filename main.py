@@ -4,7 +4,7 @@ from engine import Engine
 from input_handlers import EventHandler
 from entity import Entity
 from game_map import GameMap
-
+from procgen import generate_dungeon
 
 def main() -> None:
     screen_width = 80
@@ -27,7 +27,7 @@ def main() -> None:
                     "@", (255, 255, 0)
                     )
     entities = {npc, player}
-    game_map = GameMap(map_width, map_height)
+    game_map = generate_dungeon(map_width, map_height)
 
     engine = Engine(entities=entities, event_handler=event_handler, game_map=game_map, player=player)
     with tcod.context.new_terminal(
