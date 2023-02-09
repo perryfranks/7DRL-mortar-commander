@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import copy
-from typing import Tuple, TYPE_CHECKING, TypeVar, Optional
+from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from components.ai import BaseAI
+    from components.fighter import Fighter
     from game_map import GameMap
 
 T = TypeVar("T", bound="Entity")
@@ -58,3 +60,8 @@ class Entity:
                 self.gamemap.entities.remove(self)
             self.gamemap = gamemap
             gamemap.entities.add(self)
+
+
+class Actor(Entity):
+    def __init__(self
+                 ):
