@@ -6,9 +6,6 @@ if TYPE_CHECKING:
     from entity import Entity
 
 
-
-
-
 class Action:
     def __init__(self, entity: Entity) -> None:
         super().__init__()
@@ -49,11 +46,11 @@ class ActionWithDirection(Action):
 
     @property
     def blocking_entity(self) -> Optional[Entity]:
-        """Return the blocking entity at this actions destination"""
+        """Return the blocking entity at this actions destination.."""
         return self.engine.game_map.get_blocking_entity_at_location(*self.dest_xy)
 
     def perform(self) -> None:
-        raise SystemError()
+        raise NotImplementedError()
 
 
 class MeleeAction(ActionWithDirection):
@@ -68,6 +65,8 @@ class BumpAction(ActionWithDirection):
     def perform(self) -> None:
         if self.blocking_entity:
             return MeleeAction(self.entity, self.dx, self.dy).perform()
+        else:
+            return MovementAction(self.entity, self.dx, self.dy).perform()
 
 
 class MovementAction(ActionWithDirection):

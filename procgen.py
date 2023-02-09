@@ -9,9 +9,10 @@ from game_map import GameMap
 import tile_types
 import tcod
 
-# Idk what this does
+# IDK what this does
 if TYPE_CHECKING:
-    from entity import Entity
+    from engine import Engine
+
 
 class RectangularRoom:
     def __init__(self, x: int, y: int, width: int, height: int):
@@ -85,13 +86,14 @@ def generate_dungeon(
         map_width: int,
         map_height: int,
         max_monsters_per_room: int,
-        player: Entity) -> GameMap:
+        engine: Engine) -> GameMap:
     """Generate a new dungeon map."""
-    dungeon = GameMap(map_width, map_height, entities=[player])
+    player = engine.player
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
     rooms: List[RectangularRoom] = []
 
-    # stops after max_rooms attemps not after adding that many to the dungeon
+    # stops after max_rooms attempts not after adding that many to the dungeon
     for r in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
         room_height = random.randint(room_min_size, room_max_size)
@@ -113,7 +115,7 @@ def generate_dungeon(
 
         if len(rooms) == 0:
             # The first room, where the player starts
-            player.x, player.y = new_room.center
+            player.place(*new_room.center)
         else:
             # negative index gives last made room
             for x, y in tunnel_between(rooms[-1].center, new_room.center):

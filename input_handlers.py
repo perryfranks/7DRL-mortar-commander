@@ -6,6 +6,7 @@ from actions import Action, EscapeAction, BumpAction
 if TYPE_CHECKING:
     from engine import Engine
 
+
 class EventHandler(tcod.event.EventDispatch[Action]):
     def __init__(self, engine: Engine):
         self.engine = engine
