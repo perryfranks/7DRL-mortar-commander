@@ -66,8 +66,8 @@ class Actor(Entity):
     def __init__(
             self,
             *,
-            x: int,
-            y: int,
+            x: int = 0,
+            y: int = 0,
             char: str = "?",
             color: Tuple[int, int, int] = (255, 255, 255),
             name: str = "<Unnamed>",

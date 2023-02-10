@@ -1,4 +1,5 @@
-from base_components import BaseComponent
+from components.base_components import BaseComponent
+
 
 class Fighter(BaseComponent):
     def __init__(self, hp: int, defense: int, power: int):
