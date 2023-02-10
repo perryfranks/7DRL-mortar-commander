@@ -63,5 +63,25 @@ class Entity:
 
 
 class Actor(Entity):
-    def __init__(self
+    def __init__(
+            self,
+            *,
+            x: int,
+            y: int,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            ai_cls: Type[BaseAI],
+            fighter: Fighter
                  ):
+        super().__init__(
+            x=x, y=y, char=char, name=name, blocks_movement=True,
+        )
+        self.ai: Optional[BaseAI] = ai_cls(self)
+        self.fighter = fighter
+        self.fighter.entity = self
+
+    @property
+    def is_alive(self) -> bool:
+        """Returns True as long as this actor can perform actions,"""
+        return bool(self.ai)

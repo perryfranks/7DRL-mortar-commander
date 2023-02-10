@@ -33,6 +33,11 @@ class EscapeAction(Action):
         raise SystemExit()
 
 
+class WaitAction(Action):
+    def perform(self) -> None:
+        pass
+
+
 class ActionWithDirection(Action):
     def __init__(self, entity: Entity, dx: int, dy: int):
         super().__init__(entity)
@@ -46,7 +51,7 @@ class ActionWithDirection(Action):
 
     @property
     def blocking_entity(self) -> Optional[Entity]:
-        """Return the blocking entity at this actions destination.."""
+        """Return the blocking entity at this action's destination.."""
         return self.engine.game_map.get_blocking_entity_at_location(*self.dest_xy)
 
     def perform(self) -> None:
