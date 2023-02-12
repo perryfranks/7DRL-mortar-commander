@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 from typing import Tuple, Iterator, List, TYPE_CHECKING
+
 import tcod
 
 import entity_factories
@@ -114,7 +115,7 @@ def generate_dungeon(
 
         if len(rooms) == 0:
             # The first room, where the player starts
-            player.place(*new_room.center)
+            player.place(*new_room.center, dungeon)
         else:
             # negative index gives last made room
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
