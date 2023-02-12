@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 from typing import Optional, TYPE_CHECKING
+
 import tcod.event
+
 from actions import Action, EscapeAction, BumpAction, WaitAction
 
 if TYPE_CHECKING:
@@ -36,16 +39,25 @@ MOVE_KEYS = {
     tcod.event.K_n: (1, 1),
 }
 
-WAIT_KEYS  = {
+WAIT_KEYS = {
     tcod.event.K_PERIOD,
     tcod.event.K_KP_5,
     tcod.event.K_CLEAR,
 }
 
+
 class EventHandler(tcod.event.EventDispatch[Action]):
     def __init__(self, engine: Engine):
         self.engine = engine
 
+    def handle_events(self) -> None:
+        raise NotImplementedError()
+
+    def ev_quit(self, event: tcod.event.Quit) -> Optional[T]:
+        raise SystemExit()
+
+
+class MainGameEventHandler(EventHandler):
     def handle_events(self) -> None:
         for event in tcod.event.wait():
             action = self.dispatch(event)
@@ -57,9 +69,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
             self.engine.handle_enemy_turns()
             self.engine.update_fov()
-
-    def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
-        raise SystemExit()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         action: Optional[Action] = None
@@ -76,4 +85,26 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             action = EscapeAction(player)
 
         # no valid key
+        return action
+
+
+class GameOverEventHandler(EventHandler):
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+
+            action.perform()
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[T]:
+        action: Optional[Action] = None
+
+        key = event.sys
+
+        if key == tcod.event.K_ESCAPE:
+            action = EscapeAction(self.engine.player)
+
+        # No valid key pressed
         return action

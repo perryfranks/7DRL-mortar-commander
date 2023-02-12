@@ -17,18 +17,20 @@ class Entity:
     """
     A generic object to represent players, enemies, items...
     """
+
     gamemap: GameMap
 
-    def __init__(self,
-                 gamemap: Optional[GameMap] = None,
-                 x: int = 0,
-                 y: int = 0,
-                 char: str = "?",
-                 color: Tuple[int, int, int] = (255, 255, 255),
-                 name: str = "<Unnamed>",
-                 blocks_movement: bool = False,
-                 render_order: RenderOrder = RenderOrder.CORPSE,
-                 ):
+    def __init__(
+            self,
+            gamemap: Optional[GameMap] = None,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            blocks_movement: bool = False,
+            render_order: RenderOrder = RenderOrder.CORPSE,
+    ):
         self.x = x
         self.y = y
         self.char = char
@@ -50,11 +52,6 @@ class Entity:
         gamemap.entities.add(clone)
         return clone
 
-    def move(self, dx: int, dy: int) -> None:
-        # Move the entity by the given amount
-        self.x += dx
-        self.y += dy
-
     def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
         """Place this entity at a new location. Handles moving across GameMaps."""
         self.x = x
@@ -64,6 +61,11 @@ class Entity:
                 self.gamemap.entities.remove(self)
             self.gamemap = gamemap
             gamemap.entities.add(self)
+
+    def move(self, dx: int, dy: int) -> None:
+        # Move the entity by the given amount
+        self.x += dx
+        self.y += dy
 
 
 class Actor(Entity):
@@ -77,11 +79,18 @@ class Actor(Entity):
             name: str = "<Unnamed>",
             ai_cls: Type[BaseAI],
             fighter: Fighter
-                 ):
+    ):
         super().__init__(
-            x=x, y=y, char=char, name=name, blocks_movement=True,
+            x=x,
+            y=y,
+            char=char,
+            color=color,
+            name=name,
+            blocks_movement=True,
+            render_order=RenderOrder.ACTOR,
         )
         self.ai: Optional[BaseAI] = ai_cls(self)
+
         self.fighter = fighter
         self.fighter.entity = self
 

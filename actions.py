@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Optional, TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
@@ -41,6 +42,7 @@ class WaitAction(Action):
 class ActionWithDirection(Action):
     def __init__(self, entity: Actor, dx: int, dy: int):
         super().__init__(entity)
+
         self.dx = dx
         self.dy = dy
 
@@ -79,14 +81,6 @@ class MeleeAction(ActionWithDirection):
             print(f"{attack_desc} but does no damage")
 
 
-class BumpAction(ActionWithDirection):
-    def perform(self) -> None:
-        if self.target_actor:
-            return MeleeAction(self.entity, self.dx, self.dy).perform()
-        else:
-            return MovementAction(self.entity, self.dx, self.dy).perform()
-
-
 class MovementAction(ActionWithDirection):
     def perform(self) -> None:
         dest_x, dest_y = self.dest_xy
@@ -98,3 +92,11 @@ class MovementAction(ActionWithDirection):
         if self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
             return  # Destination blocked by an entity.
         self.entity.move(self.dx, self.dy)
+
+
+class BumpAction(ActionWithDirection):
+    def perform(self) -> None:
+        if self.target_actor:
+            return MeleeAction(self.entity, self.dx, self.dy).perform()
+        else:
+            return MovementAction(self.entity, self.dx, self.dy).perform()

@@ -1,15 +1,13 @@
 from __future__ import annotations
+
 import random
 from typing import Tuple, Iterator, List, TYPE_CHECKING
+import tcod
 
 import entity_factories
 from game_map import GameMap
-
-
 import tile_types
-import tcod
 
-# IDK what this does
 if TYPE_CHECKING:
     from engine import Engine
 
@@ -31,36 +29,17 @@ class RectangularRoom:
     @property
     def inner(self) -> Tuple[slice, slice]:
         """Return the inner area of this room as a 2D array index"""
-        return slice(self.x1 + 1 , self.x2), slice(self.y1 + 1, self.y2)
+        return slice(self.x1 + 1, self.x2), slice(self.y1 + 1, self.y2)
 
     def intersects(self, other: RectangularRoom) -> bool:
         """Return True if this room overlaps with another RectangularRoom."""
 
         return (
-            self.x1 <= other.x2
-            and self.x2 >= other.x1
-            and self.y1 <= other.y2
-            and self.y2 >= other.y1
+                self.x1 <= other.x2
+                and self.x2 >= other.x1
+                and self.y1 <= other.y2
+                and self.y2 >= other.y1
         )
-
-
-def tunnel_between(
-        start: Tuple[int, int], end: Tuple[int, int ]) -> Iterator[Tuple[int, int]]:
-    """Return an L-shaped tunnel between these two points"""
-    x1, y1 = start
-    x2, y2 = end
-    if random.random() < 0.5:  # 50% chance
-        # move hoz then vert
-        corner_x, corner_y = x2, y1
-    else:
-        # Move vert then hoz
-        corner_x, corner_y = x1, y2
-
-    # Generate the coords for this tunnel
-    for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
-        yield x, y
-    for x, y in tcod.los.bresenham( (corner_x, corner_y), (x2, y2)).tolist():
-        yield x, y
 
 
 def place_entities(
@@ -79,6 +58,25 @@ def place_entities(
                 entity_factories.troll.spawn(dungeon, x, y)
 
 
+def tunnel_between(
+        start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
+    """Return an L-shaped tunnel between these two points"""
+    x1, y1 = start
+    x2, y2 = end
+    if random.random() < 0.5:  # 50% chance
+        # move hoz then vert
+        corner_x, corner_y = x2, y1
+    else:
+        # Move vert then hoz
+        corner_x, corner_y = x1, y2
+
+    # Generate the coords for this tunnel
+    for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
+        yield x, y
+    for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
+        yield x, y
+
+
 def generate_dungeon(
         max_rooms: int,
         room_min_size: int,
@@ -86,7 +84,8 @@ def generate_dungeon(
         map_width: int,
         map_height: int,
         max_monsters_per_room: int,
-        engine: Engine) -> GameMap:
+        engine: Engine
+) -> GameMap:
     """Generate a new dungeon map."""
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
@@ -126,4 +125,3 @@ def generate_dungeon(
         rooms.append(new_room)
 
     return dungeon
-
