@@ -101,7 +101,7 @@ class GameOverEventHandler(EventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[T]:
         action: Optional[Action] = None
 
-        key = event.sys
+        key = event.sym
 
         if key == tcod.event.K_ESCAPE:
             action = EscapeAction(self.engine.player)
