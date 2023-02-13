@@ -6,14 +6,12 @@ import numpy as np
 import tcod
 
 from actions import Action, MeleeAction, MovementAction, WaitAction
-from components.base_components import BaseComponent
 
 if TYPE_CHECKING:
     from entity import Actor
 
 
-class BaseAI(Action, BaseComponent):
-    entity: Actor
+class BaseAI(Action):
 
     def perform(self) -> None:
         raise NotImplementedError()
@@ -38,7 +36,7 @@ class BaseAI(Action, BaseComponent):
             # Create a graph from the cost array and pass that graph to a new pathfinder.
             graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
             pathfinder = tcod.path.Pathfinder(graph)
-            pathfinder.add_root((self.entity.x, self.entity.y)) # Start position.
+            pathfinder.add_root((self.entity.x, self.entity.y))  # Start position.
 
             # Compute the path to the destination and remove the starting point
             path: List[List[int]] = pathfinder.path_to((dest_x, dest_y))[1:].tolist()
@@ -59,7 +57,7 @@ class HostileEnemy(BaseAI):
 
         if self.engine.game_map.visible[self.entity.x, self.entity.y]:
             if distance <= 1:
-                 return MeleeAction(self.entity, dx, dy).perform()
+                return MeleeAction(self.entity, dx, dy).perform()
             self.path = self.get_path_to(target.x, target.y)
 
         if self.path:
