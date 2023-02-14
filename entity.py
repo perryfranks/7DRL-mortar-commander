@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import math
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
@@ -23,15 +24,15 @@ class Entity:
     parent: Union[GameMap, Inventory]
 
     def __init__(
-        self,
-        parent: Optional[GameMap] = None,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: Tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        blocks_movement: bool = False,
-        render_order: RenderOrder = RenderOrder.CORPSE,
+            self,
+            parent: Optional[GameMap] = None,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            blocks_movement: bool = False,
+            render_order: RenderOrder = RenderOrder.CORPSE,
     ):
         self.x = x
         self.y = y
@@ -69,6 +70,12 @@ class Entity:
             self.parent = gamemap
             gamemap.entities.add(self)
 
+    def distance(self, x: int, y: int) -> float:
+        """
+        Return the distance between the current entity and the given (x, y) coordinate.
+        """
+        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+
     def move(self, dx: int, dy: int) -> None:
         # Move the entity by a given amount
         self.x += dx
@@ -77,16 +84,16 @@ class Entity:
 
 class Actor(Entity):
     def __init__(
-        self,
-        *,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: Tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        ai_cls: Type[BaseAI],
-        fighter: Fighter,
-        inventory: Inventory,
+            self,
+            *,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            ai_cls: Type[BaseAI],
+            fighter: Fighter,
+            inventory: Inventory,
     ):
         super().__init__(
             x=x,
@@ -114,14 +121,14 @@ class Actor(Entity):
 
 class Item(Entity):
     def __init__(
-        self,
-        *,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: Tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        consumable: Consumable,
+            self,
+            *,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            consumable: Consumable,
     ):
         super().__init__(
             x=x,
