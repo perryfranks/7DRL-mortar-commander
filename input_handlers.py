@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
 import tcod
@@ -65,13 +67,15 @@ ActionOrHandler = Union[Action, "BaseEventHandler"]
 If a handler is returned is returned then it will become the active and if it's
 valid then MainGameEventHandler will become the active handler.
 """
+
+
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
         state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
             return state
-        assert not isinstance(state, Action) , f"{self!r} can not handle actions."
+        assert not isinstance(state, Action), f"{self!r} can not handle actions."
         return self
 
     def on_render(self, console: tcod.Console) -> None:
@@ -79,6 +83,7 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
+
 
 class EventHandler(BaseEventHandler):
     def __init__(self, engine: Engine):
@@ -96,7 +101,6 @@ class EventHandler(BaseEventHandler):
                 return GameOverEventHandler(self.engine)
             return MainGameEventHandler(self.engine)  # Return to the main handler.
         return self
-
 
     def handle_action(self, action: Optional[Action]) -> bool:
         """Handle actions returned from event methods.
@@ -322,11 +326,12 @@ class SingleRangedAttackHandler(SelectIndexHandler):
 # TODO: there may be a bug here
 class AreaRangedAttackHandler(SelectIndexHandler):
     """Handles targeting an area within a given radius. Any entity within the area will be affected."""
+
     def __init__(
-        self,
-        engine: Engine,
-        radius: int,
-        callback: Callable[[Tuple[int, int]], Optional[Action]],
+            self,
+            engine: Engine,
+            radius: int,
+            callback: Callable[[Tuple[int, int]], Optional[Action]],
     ):
         super().__init__(engine)
 
@@ -388,7 +393,16 @@ class MainGameEventHandler(EventHandler):
 class GameOverEventHandler(EventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
-            raise SystemExit()
+            self.on_quit()
+
+    def on_quit(self) -> None:
+        """Handle exiting out of a finished game."""
+        if os.path.exists("savegame.sav"):
+            os.remove("savegame.sav")  # Deletes the active save file.
+        raise exceptions.QuitWithoutSaving()  # Avoid saving a finished game.from
+
+    def ev_quit(self, event: tcod.event.Quit) -> None:
+        self.on_quit()
 
 
 CURSOR_Y_KEYS = {
@@ -449,3 +463,30 @@ class HistoryViewer(EventHandler):
         else:  # Any other key moves back to the main game state.
             return MainGameEventHandler(self.engine)
         return None
+
+
+class PopupMessage(BaseEventHandler):
+    """Display a popup text window."""
+
+    def __init__(self, parent_handler: BaseEventHandler, text: str):
+        self.parent = parent_handler
+        self.text = text
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Render the parent and dim the result, then print the message on top."""
+        self.parent.on_render(console)
+        console.tiles_rgb["fg"] //= 8
+        console.tiles_rgb["bg"] //= 8
+
+        console.print(
+            console.width // 2,
+            console.height // 2,
+            self.text,
+            fg=color.white,
+            bg=color.black,
+            alignment=tcod.CENTER,
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        """Any key returns to the parent handler."""
+        return self.parent
