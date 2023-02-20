@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class Level(BaseComponent):
-    parent = Actor
+    parent: Actor
 
     def __init__(
             self,
