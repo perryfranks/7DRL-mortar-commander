@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Tuple, TYPE_CHECKING
 
-import color
+from graphics import color
 
 if TYPE_CHECKING:
     from tcod import Console

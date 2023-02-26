@@ -3,7 +3,8 @@ import traceback
 
 import tcod
 
-import color
+import graphics.titles
+from graphics import color
 import exceptions
 import input_handlers
 import setup_game
@@ -21,7 +22,7 @@ def main() -> None:
     screen_height = 50
 
     tileset = tcod.tileset.load_tilesheet(
-        "texture.png", 32, 8, tcod.tileset.CHARMAP_TCOD
+        "graphics/texture.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
     handler: input_handlers.BaseEventHandler = setup_game.MainMenu()
@@ -29,7 +30,7 @@ def main() -> None:
             screen_width,
             screen_height,
             tileset=tileset,
-            title="Yet Another Roguelike Tutorial",
+            title=graphics.titles.TITLE,
             vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")

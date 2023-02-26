@@ -7,59 +7,21 @@ from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 import tcod
 
 import actions
+import input.key_actions as key_actions
+
 from actions import (
     Action,
     BumpAction,
     PickupAction,
     WaitAction,
 )
-import color
+from graphics import color
 import exceptions
 
 if TYPE_CHECKING:
     from engine import Engine
     from entity import Item
 
-MOVE_KEYS = {
-    # Arrow keys.
-    tcod.event.K_UP: (0, -1),
-    tcod.event.K_DOWN: (0, 1),
-    tcod.event.K_LEFT: (-1, 0),
-    tcod.event.K_RIGHT: (1, 0),
-    tcod.event.K_HOME: (-1, -1),
-    tcod.event.K_END: (-1, 1),
-    tcod.event.K_PAGEUP: (1, -1),
-    tcod.event.K_PAGEDOWN: (1, 1),
-    # Numpad keys.
-    tcod.event.K_KP_1: (-1, 1),
-    tcod.event.K_KP_2: (0, 1),
-    tcod.event.K_KP_3: (1, 1),
-    tcod.event.K_KP_4: (-1, 0),
-    tcod.event.K_KP_6: (1, 0),
-    tcod.event.K_KP_7: (-1, -1),
-    tcod.event.K_KP_8: (0, -1),
-    tcod.event.K_KP_9: (1, -1),
-    # Vi keys.
-    tcod.event.K_h: (-1, 0),
-    tcod.event.K_j: (0, 1),
-    tcod.event.K_k: (0, -1),
-    tcod.event.K_l: (1, 0),
-    tcod.event.K_y: (-1, -1),
-    tcod.event.K_u: (1, -1),
-    tcod.event.K_b: (-1, 1),
-    tcod.event.K_n: (1, 1),
-}
-
-WAIT_KEYS = {
-    tcod.event.K_PERIOD,
-    tcod.event.K_KP_5,
-    tcod.event.K_CLEAR,
-}
-
-CONFIRM_KEYS = {
-    tcod.event.K_RETURN,
-    tcod.event.K_KP_ENTER,
-}
 
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
@@ -387,7 +349,7 @@ class SelectIndexHandler(AskUserEventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         """Check for key movement or confirmation keys."""
         key = event.sym
-        if key in MOVE_KEYS:
+        if key in key_actions.MOVE_KEYS:
             modifier = 1  # Holding modifier keys will speed up key movement.
             if event.mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
                 modifier *= 5
@@ -397,7 +359,7 @@ class SelectIndexHandler(AskUserEventHandler):
                 modifier *= 20
 
             x, y = self.engine.mouse_location
-            dx, dy = MOVE_KEYS[key]
+            dx, dy = key_actions.MOVE_KEYS[key]
             x += dx * modifier
             y += dy * modifier
             # Clamp the cursor index to the map size.
@@ -405,7 +367,7 @@ class SelectIndexHandler(AskUserEventHandler):
             y = max(0, min(y, self.engine.game_map.height - 1))
             self.engine.mouse_location = x, y
             return None
-        elif key in CONFIRM_KEYS:
+        elif key in key_actions.CONFIRM_KEYS:
             return self.on_index_selected(*self.engine.mouse_location)
         return super().ev_keydown(event)
 
@@ -494,10 +456,10 @@ class MainGameEventHandler(EventHandler):
         ):
             return actions.TakeStairsAction(player)
 
-        if key in MOVE_KEYS:
-            dx, dy = MOVE_KEYS[key]
+        if key in key_actions.MOVE_KEYS:
+            dx, dy = key_actions.MOVE_KEYS[key]
             action = BumpAction(player, dx, dy)
-        elif key in WAIT_KEYS:
+        elif key in key_actions.WAIT_KEYS:
             action = WaitAction(player)
 
         elif key == tcod.event.K_ESCAPE:

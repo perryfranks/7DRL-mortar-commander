@@ -3,7 +3,7 @@ import textwrap
 
 import tcod
 
-import color
+from graphics import color
 
 
 class Message:

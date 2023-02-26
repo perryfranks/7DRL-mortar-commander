@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 
 import actions
-import color
+from graphics import color
 import components.inventory
 import components.ai
 from components.base_components import BaseComponent

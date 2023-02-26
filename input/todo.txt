@@ -1,0 +1,22 @@
+currently our input system has the actual key (like 'w'),
+it's corresponding movement on a grid, and code tied into a single
+file how do we separate them?
+
+
+--------
+keys entered by user
+--------
+key translated to an action
+--------
+actions used in code
+--------
+
+
+What are the actions?
+
+movement
+
+action
+
+interface
+

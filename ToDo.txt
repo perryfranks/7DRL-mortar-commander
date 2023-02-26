@@ -1,0 +1,53 @@
+decouple the game engine, controls, win state, enemies
+
+what will be the same between the game?
+
+enemies
+
+some procgen
+
+ranged attacks
+
+maybe equipment
+
+menu system
+
+
+
+what will be different?
+
+The turn order to a degree
+
+Player can do any number of moves before next turn
+
+the progen
+
+the resources
+
+enemy attack patterns
+
+having multple friends plus friendy AI
+
+no leveling
+
+So having some way to turn these scpits off without having to deal with that stuff
+
+
+What do we want to be robust for the jam?
+what the engine can run with
+
+colors and ui are easy to implement and change
+    the colors are currenty named for the game maybe a further generic set would be good
+
+    maybe the observer pattern would be useful
+
+load controls from a config
+
+currently the player =
+    can move
+    attack on bump
+    equip things
+    iteract with things
+
+
+Get the title and graphics from a file

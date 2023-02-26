@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, Tuple, TYPE_CHECKING
 
-import color
+from graphics import color
 import exceptions
 
 if TYPE_CHECKING:
