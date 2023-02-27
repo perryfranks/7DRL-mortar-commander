@@ -3,23 +3,29 @@ import traceback
 
 import tcod
 
-import graphics.titles
-from graphics import color
 import exceptions
+import graphics.titles
 import input_handlers
 import setup_game
+from graphics import color
+from save_functions import save_game
+from config import SAVE_LOCATION
 
 
-def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
-    """if the current event handler has an active engine save it."""
-    if isinstance(handler, input_handlers.EventHandler):
-        handler.engine.save_as(filename)
-        print("Game Saved.")
-
-
-def main() -> None:
-    screen_width = 80
-    screen_height = 50
+# TODO: How will we actually distribute this?
+# TODO: get the sound hooked in
+def main(
+        screen_width: int,
+        screen_height: int,
+) -> None:
+    """
+    Main function that instantiates both the tcod window and game engine (whether by creation or loading a save game)
+    this allows us to actually play the game.
+    :param screen_width: the width of the screen to create (not how much will be displayed on a single srceen in the
+    game)
+    :param screen_height: the height of the screen to create
+    :return: Nothing. When this function returns it should be the end of the program.
+    """
 
     tileset = tcod.tileset.load_tilesheet(
         "graphics/texture.png", 32, 8, tcod.tileset.CHARMAP_TCOD
@@ -54,12 +60,14 @@ def main() -> None:
         except exceptions.QuitWithoutSaving:
             raise
         except SystemExit:  # Save and quit.
-            save_game(handler, "savegame.sav")
+            save_game(handler, SAVE_LOCATION)
             raise
         except BaseException:  # Save an any other unexpected exception.
-            save_game(handler, "savegame.sav")
+            save_game(handler, SAVE_LOCATION)
             raise
 
 
 if __name__ == "__main__":
-    main()
+    width = 78
+    height = 50
+    main(screen_width=width, screen_height=height)

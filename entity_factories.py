@@ -6,6 +6,7 @@ from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
 
+# Friendlies
 
 player = Actor(
     char="@",
@@ -17,7 +18,7 @@ player = Actor(
     inventory=Inventory(capacity=26),
     level=Level(level_up_base=200),
 )
-
+# Enemies
 orc = Actor(
     char="o",
     color=(63, 127, 63),
@@ -39,6 +40,8 @@ troll = Actor(
     level=Level(xp_given=100),
 )
 
+# Items
+#       Consumables
 confusion_scroll = Item(
     char="~",
     color=(207, 63, 255),
@@ -64,6 +67,7 @@ lightning_scroll = Item(
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
 )
 
+#      Equipment
 dagger = Item(
     char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
 )
