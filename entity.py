@@ -86,6 +86,10 @@ class Entity:
 
 
 class Actor(Entity):
+    """
+    Extension of Entity. Has ai, fighter, inventory, and level so on. These components do not need to be functional
+    for all actors (enemies do not need working inventory and so on)
+    """
     def __init__(
         self,
         *,

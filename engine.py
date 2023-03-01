@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class Engine:
+    """"""
     game_map: GameMap
     game_world: GameWorld
 
