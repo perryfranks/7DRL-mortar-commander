@@ -22,6 +22,10 @@ class Message:
 
 class MessageLog:
     def __init__(self) -> None:
+        """
+
+        :rtype: object
+        """
         self.messages: List[Message] = []
 
     def add_message(

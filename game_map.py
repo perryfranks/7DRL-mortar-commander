@@ -41,6 +41,11 @@ class GameWorld:
         self.current_floor = current_floor
 
     def generate_floor(self) -> None:
+        """
+        Generate a new dungeon and assign it to the current game map,
+        this will overwrite the old dungeon immediately
+        :return: None, as the output is already assigned to the engine's game map
+        """
         from procgen import generate_dungeon
         self.current_floor += 1
 
@@ -93,6 +98,13 @@ class GameMap:
     def get_blocking_entity_at_location(
             self, location_x: int, location_y: int
     ) -> Optional[Entity]:
+        """
+        Simply checks the block_movement flag for entities in the given spot. The number is
+        Only the first blocking entity will be returned. This cannot be used to get the important entities here
+        :param location_x:
+        :param location_y:
+        :return: None or a single blocker at the location given
+        """
         for entity in self.entities:
             if (
                     entity.blocks_movement

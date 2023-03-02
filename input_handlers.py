@@ -32,6 +32,11 @@ valid then MainGameEventHandler will become the active handler.
 
 
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
+    """
+    Basic and basically unusable Event handler that extends some tcod stuff.
+    Defines some needed functions for handling the event triggers -> render the new state of the game
+
+    """
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
         state = self.dispatch(event)
@@ -48,6 +53,10 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
 
 
 class EventHandler(BaseEventHandler):
+    """
+    The more general event handler that handles most of the game.
+    :param engine: The relevant engine for this event. Needed for creating change based of the input
+    """
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -97,7 +106,7 @@ class AskUserEventHandler(EventHandler):
     """Handles user input for actions which require special input."""
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        """By default any key exits this input handler."""
+        """By default, any key exits this input handler."""
         if event.sym in {  # Ignore modifier keys.
             tcod.event.K_LSHIFT,
             tcod.event.K_RSHIFT,
