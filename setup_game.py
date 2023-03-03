@@ -17,7 +17,6 @@ from graphics import color
 from graphics.titles import get_welcome_message, TITLE, CREDITS
 from save_functions import load_game
 
-
 # Load the background image and remove the alpha channel.
 background_image = tcod.image.load("graphics/menu_background.png")[:, :, :3]
 
@@ -86,6 +85,7 @@ def new_game(
         room_max_size=room_max_size,
         map_width=map_width,
         map_height=map_height,
+
     )
 
     engine.game_world.generate_floor()

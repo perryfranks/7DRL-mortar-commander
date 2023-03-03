@@ -35,7 +35,7 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     """
     Basic and basically unusable Event handler that extends some tcod stuff.
     Defines some needed functions for handling the event triggers -> render the new state of the game
-
+    In general the interfacing between the player and game system is done by overriding the tcod function ev_keydown
     """
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
@@ -106,7 +106,7 @@ class AskUserEventHandler(EventHandler):
     """Handles user input for actions which require special input."""
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        """By default, any key exits this input handler."""
+        """By default, any key exits this input handler, except for modifier keys."""
         if event.sym in {  # Ignore modifier keys.
             tcod.event.K_LSHIFT,
             tcod.event.K_RSHIFT,
@@ -133,6 +133,10 @@ class AskUserEventHandler(EventHandler):
 
 
 class CharacterScreenEventHandler(AskUserEventHandler):
+    """
+    Renders the character information like stats onto the screen
+    Has little logic besides that
+    """
     TITLE = "Character Information"
 
     def on_render(self, console: tcod.Console) -> None:
@@ -156,6 +160,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             bg=(0, 0, 0),
         )
 
+        # Draw character stats
         console.print(
             x=x + 1, y=y + 1, string=f"Level: {self.engine.player.level.current_level}"
         )
@@ -174,6 +179,10 @@ class CharacterScreenEventHandler(AskUserEventHandler):
 
 
 class LevelUpEventHandler(AskUserEventHandler):
+    """
+    Allows the player to level up a selected attribute.
+    On render handles displaying this information while ev_keydown actually affects the game state
+    """
     TITLE = "Level up"
 
     def on_render(self, console: tcod.Console) -> None:
@@ -452,6 +461,11 @@ class AreaRangedAttackHandler(SelectIndexHandler):
 
 
 class MainGameEventHandler(EventHandler):
+    """
+    Effectively passes up the correct action to perform based on a keydown event.
+    To add more actions/conditions to existing actions this class should be open to extension
+
+    """
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         action: Optional[Action] = None
 
@@ -492,7 +506,9 @@ class MainGameEventHandler(EventHandler):
 
 
 class GameOverEventHandler(EventHandler):
-
+    """
+    Handle exiting the game and most importantly saving the game before exiting
+    """
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
             self.on_quit()

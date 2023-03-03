@@ -60,7 +60,14 @@ def main(
         except exceptions.QuitWithoutSaving:
             raise
         except SystemExit:  # Save and quit.
-            save_game(handler, SAVE_LOCATION)
+            if exceptions.ErrorCodes.CRITICAL:
+                # do not save
+                # TODO: this simply printing wont be useful when distributed
+                # TODO: how the fuck do we distribute it?
+                print("Critical error. Game will not be saved")
+            else:
+                print("saved game")
+                save_game(handler, SAVE_LOCATION)
             raise
         except BaseException:  # Save an any other unexpected exception.
             save_game(handler, SAVE_LOCATION)
@@ -68,6 +75,7 @@ def main(
 
 
 if __name__ == "__main__":
-    width = 78
+    # If this is to small for what we try to draw then we have a confusing error
+    width = 80
     height = 50
     main(screen_width=width, screen_height=height)

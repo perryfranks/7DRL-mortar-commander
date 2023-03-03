@@ -7,7 +7,17 @@ from graphics import color
 
 
 class Message:
+    """
+    A single, actual message with plain text, a foreground color, and a count.
+    A message will be displayed like: "Your attack misses x3"
+    """
+
     def __init__(self, text: str, fg: Tuple[int, int, int]):
+        """
+
+        :param text: Text to display in the message, no formatting is done to this
+        :param fg: foreground color represented as 3 ints for red, green, blue
+        """
         self.plain_text = text
         self.fg = fg
         self.count = 1
@@ -21,11 +31,11 @@ class Message:
 
 
 class MessageLog:
+    """
+    Message log functionality. Stores the list of previous messages and has the render logic for displaying
+    the log
+    """
     def __init__(self) -> None:
-        """
-
-        :rtype: object
-        """
         self.messages: List[Message] = []
 
     def add_message(

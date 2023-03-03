@@ -1,3 +1,6 @@
+from enum import Enum, auto
+
+
 class Impossible(Exception):
     """Exception raised when an action is impossible to be performed.
 
@@ -7,3 +10,7 @@ class Impossible(Exception):
 
 class QuitWithoutSaving(SystemExit):
     """Can be raised to exit the game without automatically saving."""
+
+
+class ErrorCodes(Enum):
+    CRITICAL = auto()

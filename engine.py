@@ -25,7 +25,7 @@ class Engine:
     :type fov: bool
     """
     # TODO: having fov off may cause errors. Experiment and fix
-
+    # Yep it casues the whole screen to be black
     game_map: GameMap
     game_world: GameWorld
 
@@ -78,7 +78,15 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
         :type console: Console (libtcod class)
         :return: None
         """
-        self.game_map.render(console)
+        try:
+            self.game_map.render(console)
+        except ValueError as e:
+            print(
+                "ValueError raised when trying to render game map. This maybe because the map is bigger than the  "
+                "console"
+            )
+            print(e)
+            exit(exceptions.ErrorCodes.CRITICAL)
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
         # render the health bar of the player
