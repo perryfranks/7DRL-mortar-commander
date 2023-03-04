@@ -14,3 +14,5 @@ class QuitWithoutSaving(SystemExit):
 
 class ErrorCodes(Enum):
     CRITICAL = auto()
+
+

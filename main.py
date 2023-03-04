@@ -64,6 +64,15 @@ def main(
                 # do not save
                 # TODO: this simply printing wont be useful when distributed
                 # TODO: how the fuck do we distribute it?
+                # root_console.clear()
+                handler = input_handlers.ErrorScreen()
+                handler.on_render(console=root_console)
+                context.present(root_console)
+                for event in tcod.event.wait():
+                    print("didn't wait")
+                    print(event)
+                    context.convert_event(event)
+                    handler = handler.handle_events(event)
                 print("Critical error. Game will not be saved")
             else:
                 print("saved game")
@@ -76,6 +85,6 @@ def main(
 
 if __name__ == "__main__":
     # If this is to small for what we try to draw then we have a confusing error
-    width = 80
+    width = 75
     height = 50
     main(screen_width=width, screen_height=height)

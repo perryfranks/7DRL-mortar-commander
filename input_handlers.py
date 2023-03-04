@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from engine import Engine
     from entity import Item
 
-
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
 
@@ -37,6 +36,7 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     Defines some needed functions for handling the event triggers -> render the new state of the game
     In general the interfacing between the player and game system is done by overriding the tcod function ev_keydown
     """
+
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
         state = self.dispatch(event)
@@ -57,6 +57,7 @@ class EventHandler(BaseEventHandler):
     The more general event handler that handles most of the game.
     :param engine: The relevant engine for this event. Needed for creating change based of the input
     """
+
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -466,6 +467,7 @@ class MainGameEventHandler(EventHandler):
     To add more actions/conditions to existing actions this class should be open to extension
 
     """
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         action: Optional[Action] = None
 
@@ -509,6 +511,7 @@ class GameOverEventHandler(EventHandler):
     """
     Handle exiting the game and most importantly saving the game before exiting
     """
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
             self.on_quit()
@@ -608,3 +611,36 @@ class PopupMessage(BaseEventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
         """Any key returns to the parent handler."""
         return self.parent
+
+
+class ErrorScreen(BaseEventHandler):
+    """
+    Display an error message and get some input before closing
+    the window.
+    """
+
+    def __init__(self, error: Optional[Exception] = None, text: Optional[str] = None):
+        self.error = error
+        self.text = text
+        self.title = "ERROR"
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Display the error message to the user"""
+        print("error screen on_render")
+        console.clear()
+
+        console.print(x=0, y=0, string=self.title, fg=color.white)
+        console.print(x=0, y=1, string="There was a critical error.", fg=color.red)
+        if self.error:
+            console.print(x=0, y=2, string=str(self.error), fg=color.red)
+        if self.text:
+            console.print(x=0, y=4, string=str(self.text), fg=color.red)
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        print("error screen ev_keydown")
+        return self.on_exit()
+
+    def on_exit(self) -> None:
+        print("error screen on_exit")
+        return None
+
