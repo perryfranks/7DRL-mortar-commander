@@ -80,6 +80,6 @@ def main(
 
 if __name__ == "__main__":
     # If this is to small for what we try to draw then we have a confusing error
-    width = 75
+    width = 80
     height = 50
     main(screen_width=width, screen_height=height)
