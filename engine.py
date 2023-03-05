@@ -9,6 +9,7 @@ from tcod.map import compute_fov
 
 import exceptions
 import render_functions
+import sys
 from message_log import MessageLog
 
 if TYPE_CHECKING:
@@ -86,7 +87,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
                 "console"
             )
             print(e)
-            exit(exceptions.ErrorCodes.CRITICAL)
+            sys.exit(exceptions.ErrorCodes.CRITICAL)
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
         # render the health bar of the player

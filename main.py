@@ -2,7 +2,7 @@
 import traceback
 
 import tcod
-
+import sys
 import exceptions
 import graphics.titles
 import input_handlers
@@ -13,7 +13,6 @@ from config import SAVE_LOCATION
 
 
 # TODO: How will we actually distribute this?
-# TODO: get the sound hooked in
 def main(
         screen_width: int,
         screen_height: int,
@@ -51,6 +50,7 @@ def main(
                         context.convert_event(event)
                         handler = handler.handle_events(event)
                 except Exception:  # Handle exceptions in game.
+                    print("the exception clause ran")
                     traceback.print_exc()  # Print error to stderr.
                     # Then print the error to the message log.
                     if isinstance(handler, input_handlers.EventHandler):
@@ -64,15 +64,10 @@ def main(
                 # do not save
                 # TODO: this simply printing wont be useful when distributed
                 # TODO: how the fuck do we distribute it?
-                # root_console.clear()
                 handler = input_handlers.ErrorScreen()
                 handler.on_render(console=root_console)
                 context.present(root_console)
-                for event in tcod.event.wait():
-                    print("didn't wait")
-                    print(event)
-                    context.convert_event(event)
-                    handler = handler.handle_events(event)
+                tcod.console_wait_for_keypress(flush=True)
                 print("Critical error. Game will not be saved")
             else:
                 print("saved game")

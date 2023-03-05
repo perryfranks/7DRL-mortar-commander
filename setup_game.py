@@ -12,7 +12,8 @@ import input_handlers
 from config import SAVE_LOCATION
 from engine import Engine
 from entity import Actor
-from game_map import GameWorld
+# from game_map import GameWorld
+from game_world import GameWorld
 from graphics import color
 from graphics.titles import get_welcome_message, TITLE, CREDITS
 from save_functions import load_game
