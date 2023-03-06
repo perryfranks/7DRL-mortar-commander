@@ -98,7 +98,6 @@ class EnemySupplyScavenger(HostileEnemy):
         pass
 
     def perform(self) -> None:
-        # TODO: change this to nearest supplies
         target = self.get_target()
         dx = target.x - self.entity.x
         dy = target.y - self.entity.y
