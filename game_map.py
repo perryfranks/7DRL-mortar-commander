@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Iterator, Optional, TYPE_CHECKING
+from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Set
 import numpy as np  # type: ignore
 from tcod.console import Console
 
@@ -68,7 +68,7 @@ class GameMap:
         Only the first blocking entity will be returned. This cannot be used to get the important entities here
         :param location_x:
         :param location_y:
-        :return: None or a single blocker at the location given
+        :return: None or a single entity at the location given
         """
         for entity in self.entities:
             if (
@@ -80,7 +80,25 @@ class GameMap:
 
         return None
 
+    def get_blocking_entity_at_location_set(
+        self, location_x: int, location_y: int
+    ) -> Set:
+        e_set = set()
+        for entity in self.entities:
+            if (
+                    entity.blocks_movement
+                    and entity.x == location_x
+                    and entity.y == location_y
+            ):
+                e_set.add(entity)
+
+        return e_set
+
     def get_actor_at_location(self, x: int, y: int) -> Optional[Actor]:
+        """
+        Returns the first actor at the location. Note if there are multiple actors here the one returned is unreliable
+        :return: An actor entity. Could be a player or enemy
+        """
         for actor in self.actors:
             if actor.x == x and actor.y == y:
                 return actor

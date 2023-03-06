@@ -67,6 +67,9 @@ class HostileEnemy(BaseAI):
         distance = max(abs(dx), abs(dy))  # Chebyshev distance
 
         if self.engine.game_map.visible[self.entity.x, self.entity.y]:
+            # our first hack attempt
+            if distance == 0:
+                return None
             if distance <= 1:
                 return MeleeAction(self.entity, dx, dy).perform()
             self.path = self.get_path_to(target.x, target.y)
