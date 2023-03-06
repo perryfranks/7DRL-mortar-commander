@@ -14,6 +14,8 @@ from actions import (
     BumpAction,
     PickupAction,
     WaitAction,
+    MovementAction,
+
 )
 from graphics import color
 import exceptions
@@ -483,7 +485,8 @@ class MainGameEventHandler(EventHandler):
 
         if key in key_actions.MOVE_KEYS:
             dx, dy = key_actions.MOVE_KEYS[key]
-            action = BumpAction(player, dx, dy)
+            # action = BumpAction(player, dx, dy)
+            action = MovementAction(player, dx, dy)
         elif key in key_actions.WAIT_KEYS:
             action = WaitAction(player)
 

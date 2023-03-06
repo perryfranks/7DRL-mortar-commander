@@ -13,6 +13,12 @@ if TYPE_CHECKING:
 
 
 class BaseAI(Action):
+    """
+    Base AI only implements the simple pathfinding function get_path_to()
+    When something will apply to all entities with AI (most likely anything that moves) add it here
+
+    When extending this class the first step is implementing perform(). This defines what the entity will actually do
+    """
 
     def perform(self) -> None:
         raise NotImplementedError()
@@ -46,6 +52,10 @@ class BaseAI(Action):
 
 
 class HostileEnemy(BaseAI):
+    """
+        Defines basic enemy actions of moving to the player. If the player is within 1 tile attack them
+        NOTE: an enemies bump attack is defined here
+    """
     def __init__(self, entity: Actor):
         super().__init__(entity)
         self.path: List[Tuple[int, int]] = []

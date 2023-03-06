@@ -184,6 +184,12 @@ class MovementAction(ActionWithDirection):
 
 
 class BumpAction(ActionWithDirection):
+    """
+    On perform this action checks self.target actor and attacks if so.
+    Otherwise, it returns movement action
+    This is not solely used by the player
+    """
+
     def perform(self) -> None:
         if self.target_actor:
             return MeleeAction(self.entity, self.dx, self.dy).perform()

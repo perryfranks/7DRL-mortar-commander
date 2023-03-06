@@ -51,7 +51,6 @@ class Fighter(BaseComponent):
         else:
             return 0
 
-
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:
             return 0
