@@ -54,7 +54,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
         """
         self.handle_entity_turns()
 
-    def update_fov(self) -> None:
+    def update_fov(self, sight_radius: int = 8) -> None:
         """
         Recompute the visible area based on the players point of view.
         if hasFov is false then this will not act on anything
@@ -65,7 +65,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
         self.game_map.visible[:] = compute_fov(
             self.game_map.tiles["transparent"],
             (self.player.x, self.player.y),
-            radius=8,
+            radius=sight_radius,
         )
         # If a tile is visible it should be added to explored
         self.game_map.explored |= self.game_map.visible

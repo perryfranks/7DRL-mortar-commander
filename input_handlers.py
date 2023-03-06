@@ -92,7 +92,7 @@ class EventHandler(BaseEventHandler):
 
         self.engine.handle_enemy_turns()
 
-        self.engine.update_fov()
+        self.engine.update_fov(1000)
         return True
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
@@ -626,8 +626,7 @@ class ErrorScreen(BaseEventHandler):
 
     def on_render(self, console: tcod.Console) -> None:
         """Display the error message to the user"""
-        print("error screen on_render")
-        console.clear()
+        # console.clear()
 
         console.print(x=0, y=0, string=self.title, fg=color.white)
         console.print(x=0, y=1, string="There was a critical error.", fg=color.red)
@@ -637,10 +636,8 @@ class ErrorScreen(BaseEventHandler):
             console.print(x=0, y=4, string=str(self.text), fg=color.red)
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        print("error screen ev_keydown")
         return self.on_exit()
 
     def on_exit(self) -> None:
-        print("error screen on_exit")
         return None
 

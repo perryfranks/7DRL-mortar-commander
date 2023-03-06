@@ -16,8 +16,8 @@ graphic_dt = np.dtype(
 tile_dt = np.dtype(
     [
         # looks like np.bool has been depreciated which sucks
-        ("walkable", np.bool),  # True if this tile can be walked over.
-        ("transparent", np.bool),  # True if this tile doesn't block FOV.
+        ("walkable", bool),  # True if this tile can be walked over.
+        ("transparent", bool),  # True if this tile doesn't block FOV.
         ("dark", graphic_dt),  # Graphics for when this tile is not in FOV.
         ("light", graphic_dt),  # Graphics for when the tile is in FOV.
     ]
@@ -46,7 +46,7 @@ floor = new_tile(
 )
 wall = new_tile(
     walkable=False,
-    transparent=False,
+    transparent=True,
     dark=(ord(" "), (255, 255, 255), (0, 0, 100)),
     light=(ord(" "), (255, 255, 255), (130, 110, 50)),
 )
