@@ -86,6 +86,7 @@ class RectangularRoom:
 
 
 def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int, ) -> None:
+    # todo: remove monsters
     number_of_monsters = random.randint(
         0, get_max_value_for_floor(weights.max_monsters_by_floor, floor_number)
     )

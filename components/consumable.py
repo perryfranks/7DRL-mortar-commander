@@ -40,6 +40,17 @@ class Consumable(BaseComponent):
             inventory.items.remove(entity)
 
 
+class Supplies(Consumable):
+    """
+    The supplies that everyone is trying to capture
+    For now it just has a is supplies func because I'm lazy
+    """
+
+    @property
+    def is_supplies(self):
+        return True
+
+
 class HealingConsumable(Consumable):
     def __init__(self, amount: int):
         self.amount = amount
