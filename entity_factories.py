@@ -5,11 +5,22 @@ from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
+import graphics.our_colors
 
+# New defines
+##########################################################
+supplies = Item(
+    char="!",
+    color=graphics.our_colors.supplies,
+    name="Supplies",
+    consumable=consumable.Supplies(),
+)
+
+# Old defines
+##########################################################
 # Friendlies
-
 player = Actor(
-    char="@",
+    char="X",
     color=(255, 255, 255),
     name="Player",
     ai_cls=HostileEnemy,
