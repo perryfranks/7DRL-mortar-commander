@@ -183,6 +183,22 @@ class MovementAction(ActionWithDirection):
         self.entity.move(self.dx, self.dy)
 
 
+class PlayerMovementAction(ActionWithDirection):
+    """
+    The movement constraints for the player (a crosshair) are lax.
+    Really we just want to constrain them inside the game window
+    """
+
+    def perform(self) -> None:
+        dest_x, dest_y = self.dest_xy
+
+        if not self.engine.game_map.in_bounds(dest_x, dest_y):
+            # Destination is out of bounds.
+            raise exceptions.Impossible("That way is blocked.")
+
+        self.entity.move(self.dx, self.dy)
+
+
 class BumpAction(ActionWithDirection):
     """
     On perform this action checks self.target actor and attacks if so.

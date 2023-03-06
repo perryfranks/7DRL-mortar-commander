@@ -1,24 +1,21 @@
 from __future__ import annotations
 
 import os
-
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
 import tcod
 
 import actions
+import exceptions
 import input.key_actions as key_actions
-
 from actions import (
     Action,
-    BumpAction,
     PickupAction,
     WaitAction,
-    MovementAction,
+    PlayerMovementAction,
 
 )
 from graphics import color
-import exceptions
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -486,7 +483,7 @@ class MainGameEventHandler(EventHandler):
         if key in key_actions.MOVE_KEYS:
             dx, dy = key_actions.MOVE_KEYS[key]
             # action = BumpAction(player, dx, dy)
-            action = MovementAction(player, dx, dy)
+            action = PlayerMovementAction(player, dx, dy)
         elif key in key_actions.WAIT_KEYS:
             action = WaitAction(player)
 
@@ -643,4 +640,3 @@ class ErrorScreen(BaseEventHandler):
 
     def on_exit(self) -> None:
         return None
-
