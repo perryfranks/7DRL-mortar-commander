@@ -90,7 +90,7 @@ def new_game(
     )
 
     engine.game_world.generate_floor()
-    engine.update_fov()
+    engine.update_fov(1000)
 
     engine.message_log.add_message(
         get_welcome_message(), color.welcome_text

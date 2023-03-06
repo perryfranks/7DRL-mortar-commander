@@ -59,17 +59,16 @@ def main(
                         )
         except exceptions.QuitWithoutSaving:
             raise
-        except SystemExit:  # Save and quit.
-            if exceptions.ErrorCodes.CRITICAL:
-                # do not save
-                # TODO: this simply printing wont be useful when distributed
-                # TODO: how the fuck do we distribute it?
+        except SystemExit as e:  # Quit and potentially quit
+            if e.code == exceptions.ErrorCodes.CRITICAL:
+                # do not save as there was an error
                 handler = input_handlers.ErrorScreen()
                 handler.on_render(console=root_console)
                 context.present(root_console)
                 tcod.console_wait_for_keypress(flush=True)
                 print("Critical error. Game will not be saved")
             else:
+                # the game was exited fairly normally so save before we exit
                 print("saved game")
                 save_game(handler, SAVE_LOCATION)
             raise
