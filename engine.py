@@ -25,8 +25,6 @@ class Engine:
     :param fov: whether the game renders the players field of view
     :type fov: bool
     """
-    # TODO: having fov off may cause errors. Experiment and fix
-    # Yep it casues the whole screen to be black
     game_map: GameMap
     game_world: GameWorld
 
@@ -35,6 +33,10 @@ class Engine:
         self.player = player
         self.mouse_location = (0, 0)
         self.hasFov = fov
+
+        # Supplies counters
+        self.enemy_supplies: int = 0
+        self.friendly_supplies: int = 0
 
     def handle_entity_turns(self) -> None:
         """
@@ -114,3 +116,16 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
         save_data = lzma.compress(pickle.dumps(self))
         with open(filename, "wb") as f:
             f.write(save_data)
+
+    def enemy_add_supplies(self, value: int) -> None:
+        self.enemy_supplies = self.enemy_supplies + value
+
+    def friendly_add_supplies(self, value: int) -> None:
+        self.friendly_supplies = self.friendly_supplies + value
+
+    def supplies_winner(self) -> bool:
+        """
+        Returns whether friendly supplies count is higher than enemy supplies
+        :return: True if friendly supplies is higher
+        """
+        return self.friendly_supplies > self.enemy_supplies

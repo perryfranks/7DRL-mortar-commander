@@ -2,17 +2,16 @@
 import traceback
 
 import tcod
-import sys
+
 import exceptions
 import graphics.titles
 import input_handlers
 import setup_game
+from config import SAVE_LOCATION
 from graphics import color
 from save_functions import save_game
-from config import SAVE_LOCATION
 
 
-# TODO: How will we actually distribute this?
 def main(
         screen_width: int,
         screen_height: int,

@@ -6,7 +6,8 @@ from typing import List, Optional,Tuple, TYPE_CHECKING
 import numpy as np
 import tcod
 
-from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction
+from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction, EnemyPickupSuppliesAction
+from components.consumable import Supplies, Consumable
 
 if TYPE_CHECKING:
     from entity import Actor, Entity
@@ -87,15 +88,26 @@ class EnemySupplyScavenger(HostileEnemy):
     """
         Basically the HostileEnemy but will go for the nearest supplies instead of the player
     """
-    def get_target(self) -> Optional[Entity]:
+    def get_target(self) -> Optional[Consumable]:
         """
         Get the nearest supplies to target
         :return: Entity to target. From there you can extract x,y
         """
-        pass
+        target = self.engine.game_map.get_closest_component(self.entity.x, self.entity.y, Supplies)
 
-    def get_supplies(self, entity: Entity) -> None:
-        pass
+        return None
+
+    def get_supplies(self, supplies: Supplies) -> None:
+        # ToDo: untested
+        """
+        Handle the enemy grabbing a supply consumable. This will remove it from the map.
+        :param supplies: the supply entity that is going to be consumed
+        :return: None
+        """
+        # add the supplies to the tally
+        EnemyPickupSuppliesAction(self.entity, supplies.value)
+        # remove from the map
+        self.engine.game_map.entities.remove(supplies)
 
     def perform(self) -> None:
         target = self.get_target()

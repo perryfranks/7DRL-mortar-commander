@@ -4,6 +4,8 @@ from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Set
 import numpy as np  # type: ignore
 from tcod.console import Console
 
+import components.base_components
+from components.consumable import Consumable
 from entity import Actor, Item
 import tile_types
 
@@ -81,7 +83,7 @@ class GameMap:
         return None
 
     def get_blocking_entity_at_location_set(
-        self, location_x: int, location_y: int
+            self, location_x: int, location_y: int
     ) -> Set:
         e_set = set()
         for entity in self.entities:
@@ -103,6 +105,15 @@ class GameMap:
             if actor.x == x and actor.y == y:
                 return actor
         return None
+
+    def get_closest_component(self, x: int, y: int, target: Consumable) -> Optional[Consumable]:
+        """
+        Get the closest consumable that matches the target. The given coordinates are the
+        starting location to calculate distance from.
+        """
+
+        # must be careful we match class and not the instance
+        pass
 
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside the bounds of this map."""

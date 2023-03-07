@@ -58,6 +58,39 @@ class PickupAction(Action):
         raise exceptions.Impossible("There is nothing here to pick up.")
 
 
+class PickupSuppliesAction(Action):
+    """
+    Base class for EnemyPickupSuppliesAction & FriendlyPickupSuppliesAction.
+    Do not use this class itself.
+    """
+    def __init__(self, entity: Actor, supplies_value: int):
+        super().__init__(entity)
+        self.value = supplies_value
+
+    def perform(self) -> None:
+        raise NotImplementedError
+
+
+class EnemyPickupSuppliesAction(PickupSuppliesAction):
+    """
+    Consume supplies by adding to the enemy supplies counter to tally how the level is going. This counter is within the
+    engine.
+
+    """
+
+    def perform(self) -> None:
+        self.engine.enemy_add_supplies(self.value)
+
+
+class FriendlyPickupSuppliesAction(PickupSuppliesAction):
+    """
+    Add supplies to the friendly supplies in engine.
+    """
+
+    def perform(self) -> None:
+        self.engine.friendly_add_supplies(self.value)
+
+
 class ItemAction(Action):
     def __init__(
             self, entity: Actor, item: Item, target_xy: Optional[Tuple[int, int]] = None

@@ -45,6 +45,11 @@ class Supplies(Consumable):
     The supplies that everyone is trying to capture
     For now it just has a is supplies func because I'm lazy
     """
+    def __init__(self, value: int = 1):
+        self.value = value
+
+    def activate(self, action: actions.ItemAction) -> None:
+        pass
 
     @property
     def is_supplies(self):
