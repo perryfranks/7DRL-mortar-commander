@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, Tuple, TYPE_CHECKING
 
+from components import consumable
 from graphics import color
 import exceptions
 
@@ -66,6 +67,17 @@ class PickupSuppliesAction(Action):
     def __init__(self, entity: Actor, supplies_value: int):
         super().__init__(entity)
         self.value = supplies_value
+
+    # was this needed?
+    def find_supplies(self):
+        actor_location_x = self.entity.x
+        actor_location_y = self.entity.y
+
+        for consumable in self.engine.game_map.consumables:
+            if actor_location_x == consumable.parent.x and actor_location_y == consumable.parent.y:
+                return consumable
+
+        raise exceptions.Impossible("There is nothing here to pick up.")
 
     def perform(self) -> None:
         raise NotImplementedError
@@ -234,7 +246,7 @@ class PlayerMovementAction(ActionWithDirection):
 
 class BumpAction(ActionWithDirection):
     """
-    On perform this action checks self.target actor and attacks if so.
+    On perform this action checks self.target_class actor and attacks if so.
     Otherwise, it returns movement action
     This is not solely used by the player
     """

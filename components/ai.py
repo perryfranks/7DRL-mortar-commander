@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import List, Optional,Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import tcod
@@ -25,7 +25,7 @@ class BaseAI(Action):
         raise NotImplementedError()
 
     def get_path_to(self, dest_x: int, dest_y: int) -> List[Tuple[int, int]]:
-        """Compute and return a path to the target position.
+        """Compute and return a path to the target_class position.
 
         If there is no valid path then returns an empty list.
         """
@@ -57,6 +57,7 @@ class HostileEnemy(BaseAI):
         Defines basic enemy actions of moving to the player. If the player is within 1 tile attack them
         NOTE: an enemies bump attack is defined here
     """
+
     def __init__(self, entity: Actor):
         super().__init__(entity)
         self.path: List[Tuple[int, int]] = []
@@ -88,14 +89,16 @@ class EnemySupplyScavenger(HostileEnemy):
     """
         Basically the HostileEnemy but will go for the nearest supplies instead of the player
     """
-    def get_target(self) -> Optional[Consumable]:
-        """
-        Get the nearest supplies to target
-        :return: Entity to target. From there you can extract x,y
-        """
-        target = self.engine.game_map.get_closest_component(self.entity.x, self.entity.y, Supplies)
 
-        return None
+    def get_target(self) -> Optional[Supplies]:
+        """
+        Get the nearest supplies to target_class
+        :return: Entity to target_class. From there you can extract x,y.
+                If return is None that means there are no more supplies on the map
+        """
+        return self.engine.game_map.get_closest_consumable(
+            self.entity, Supplies
+        )
 
     def get_supplies(self, supplies: Supplies) -> None:
         # ToDo: untested
@@ -110,16 +113,20 @@ class EnemySupplyScavenger(HostileEnemy):
         self.engine.game_map.entities.remove(supplies)
 
     def perform(self) -> None:
-        target = self.get_target()
-        dx = target.x - self.entity.x
-        dy = target.y - self.entity.y
+        # Get the nearest supplies
+        # Grab them if they are within reach
+
+        target = self.get_target() # this also gets the chebyshev dist
+        dx = target.parent.x - self.entity.x
+        dy = target.parent.y - self.entity.y
         distance = max(abs(dx), abs(dy))  # Chebyshev distance
 
-        if self.engine.game_map.visible[self.entity.x, self.entity.y]:
-            if distance == 0:
-                # grab the supplies I suppose
-                return None
-            self.path = self.get_path_to(target.x, target.y)
+        # if self.engine.game_map.visible[self.entity.x, self.entity.y]:
+        if distance == 0:
+            # grab the supplies I suppose
+            return self.get_supplies(target)
+
+        self.path = self.get_path_to(target.parent.x, target.parent.y)
 
         if self.path:
             dest_x, dest_y = self.path.pop(0)
@@ -127,6 +134,7 @@ class EnemySupplyScavenger(HostileEnemy):
                 self.entity, dest_x - self.entity.x, dest_y - self.entity.y
             ).perform()
 
+        # This is the safety return
         return WaitAction(self.entity).perform()
 
 
@@ -137,7 +145,7 @@ class ConfusedEnemy(BaseAI):
     """
 
     def __init__(
-        self, entity: Actor, previous_ai: Optional[BaseAI], turns_remaining: int
+            self, entity: Actor, previous_ai: Optional[BaseAI], turns_remaining: int
     ):
         super().__init__(entity)
         self.previous_ai = previous_ai
@@ -155,17 +163,17 @@ class ConfusedEnemy(BaseAI):
             direction_x, direction_y = random.choice(
                 [
                     (-1, -1),  # Northwest
-                    (0, -1),   # North
-                    (1, -1),   # Northeast
-                    (-1, 0),   # West
-                    (1, 0),    # East
-                    (-1, 1),   # Southwest
-                    (0, 1),    # South
-                    (1, 1),    # Southeast
+                    (0, -1),  # North
+                    (1, -1),  # Northeast
+                    (-1, 0),  # West
+                    (1, 0),  # East
+                    (-1, 1),  # Southwest
+                    (0, 1),  # South
+                    (1, 1),  # Southeast
                 ]
             )
 
             self.turns_remaining -= 1
             # The actor will either try to move or attack in the chosen random direction.
             # Its possible the actor will just bump into the wall, wasting a turn.
-            return BumpAction(self.entity, direction_x, direction_y,).perform()
+            return BumpAction(self.entity, direction_x, direction_y, ).perform()

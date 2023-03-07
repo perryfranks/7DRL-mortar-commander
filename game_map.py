@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Set
+from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Set, Any
 import numpy as np  # type: ignore
 from tcod.console import Console
 
 import components.base_components
-from components.consumable import Consumable
+from components.consumable import Consumable, Supplies
 from entity import Actor, Item
 import tile_types
 
@@ -62,6 +62,11 @@ class GameMap:
     def items(self) -> Iterator[Item]:
         yield from (entity for entity in self.entities if isinstance(entity, Item))
 
+    # FIXME: IS THIS HOW CONSUMABLES ARE RENDERED?
+    @property
+    def consumables(self) -> Iterator[Consumable]:
+        yield from (entity for entity in self.entities if isinstance(entity, Consumable))
+
     def get_blocking_entity_at_location(
             self, location_x: int, location_y: int
     ) -> Optional[Entity]:
@@ -106,14 +111,43 @@ class GameMap:
                 return actor
         return None
 
-    def get_closest_component(self, x: int, y: int, target: Consumable) -> Optional[Consumable]:
+    def get_distance(self, entity1: Entity, entity2: Entity) -> int:
         """
-        Get the closest consumable that matches the target. The given coordinates are the
+        Get distance using Chebyshev distance.
+        https://en.wikipedia.org/wiki/Chebyshev_distance
+        :param entity1:
+        :param entity2:
+        :return:
+        """
+        dx = entity1.x - entity2.x
+        dy = entity1.y - entity2.y
+        distance = max(abs(dx), abs(dy))  # Chebyshev distance
+        return distance
+
+    def get_closest_consumable(self, source: Entity, target_class: type[Consumable]) -> Optional[Consumable]:
+        """
+        Get the closest consumable that matches the target_class. The given coordinates are the
         starting location to calculate distance from.
         """
 
         # must be careful we match class and not the instance
-        pass
+        # for the every entity in the list:
+        #   check it is the target_class
+        #       calculate distance
+        #           if the distance is min keep that as the minimum
+
+        minimum_dist = ()
+        minimum_obj = None
+
+        for entity in self.entities:
+            if isinstance(entity, target_class.__class__):
+                dist = self.get_distance(source, target_class.parent)
+                if dist <= minimum_dist:
+                    # new contender for closest consumable
+                    minimum_obj = entity
+                    minimum_dist = dist
+
+        return minimum_obj
 
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside the bounds of this map."""

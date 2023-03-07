@@ -108,7 +108,7 @@ class ConfusionConsumable(Consumable):
 
     def get_action(self, consumer: Actor) -> SingleRangedAttackHandler:
         self.engine.message_log.add_message(
-            "Select a target location.", color.needs_target
+            "Select a target_class location.", color.needs_target
         )
         return SingleRangedAttackHandler(
             self.engine,
@@ -120,9 +120,9 @@ class ConfusionConsumable(Consumable):
         target = action.target_actor
 
         if not self.engine.game_map.visible[action.target_xy]:
-            raise Impossible("You cannot target an area that you cannot see.")
+            raise Impossible("You cannot target_class an area that you cannot see.")
         if not target:
-            raise Impossible("You must select an enemy to target.")
+            raise Impossible("You must select an enemy to target_class.")
         if target is consumer:
             raise Impossible("You cannot confuse yourself!")
 
@@ -143,7 +143,7 @@ class FireballDamageConsumable(Consumable):
 
     def get_action(self, consumer: Actor) -> AreaRangedAttackHandler:
         self.engine.message_log.add_message(
-            "Select a target location.", color.needs_target
+            "Select a target_class location.", color.needs_target
         )
         return AreaRangedAttackHandler(
             self.engine,
@@ -155,7 +155,7 @@ class FireballDamageConsumable(Consumable):
         target_xy = action.target_xy
 
         if not self.engine.game_map.visible[target_xy]:
-            raise Impossible("You cannot target an area that you cannot see.")
+            raise Impossible("You cannot target_class an area that you cannot see.")
 
         targets_hit = False
 

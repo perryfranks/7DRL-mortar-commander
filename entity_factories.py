@@ -1,11 +1,11 @@
-from components.ai import HostileEnemy
+import graphics.our_colors
 from components import consumable, equippable
+from components.ai import EnemySupplyScavenger
 from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
-import graphics.our_colors
 
 # New defines
 ##########################################################
@@ -23,7 +23,7 @@ player = Actor(
     char="X",
     color=(255, 255, 255),
     name="Player",
-    ai_cls=HostileEnemy,
+    ai_cls=EnemySupplyScavenger,
     equipment=Equipment(),
     fighter=Fighter(hp=30, base_defense=1, base_power=2),
     inventory=Inventory(capacity=26),
@@ -34,7 +34,7 @@ orc = Actor(
     char="o",
     color=(63, 127, 63),
     name="Orc",
-    ai_cls=HostileEnemy,
+    ai_cls=EnemySupplyScavenger,
     equipment=Equipment(),
     fighter=Fighter(hp=10, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
@@ -44,7 +44,7 @@ troll = Actor(
     char="T",
     color=(0, 127, 0),
     name="Troll",
-    ai_cls=HostileEnemy,
+    ai_cls=EnemySupplyScavenger,
     equipment=Equipment(),
     fighter=Fighter(hp=16, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
