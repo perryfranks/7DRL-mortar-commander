@@ -141,6 +141,7 @@ class GameMap:
 
         for entity in self.entities:
             if isinstance(entity, target_class.__class__):
+                # This is not running
                 dist = self.get_distance(source, target_class.parent)
                 if dist <= minimum_dist:
                     # new contender for closest consumable

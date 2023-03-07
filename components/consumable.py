@@ -5,15 +5,15 @@ from typing import Optional, TYPE_CHECKING
 import actions
 from graphics import color
 import components.inventory
-import components.ai
+#import components.ai
 from components.base_components import BaseComponent
 from exceptions import Impossible
-from input_handlers import (
-    ActionOrHandler,
-    SingleRangedAttackHandler,
-    AreaRangedAttackHandler
-)
-
+#from input_handlers import (
+#    ActionOrHandler,
+#    SingleRangedAttackHandler,
+#    AreaRangedAttackHandler
+#)
+import input_handlers as ih
 if TYPE_CHECKING:
     from entity import Actor, Item
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class Consumable(BaseComponent):
     parent: Item
 
-    def get_action(self, consumer: Actor) -> Optional[ActionOrHandler]:
+    def get_action(self, consumer: Actor) -> Optional[ih.ActionOrHandler]:
         """Try to return the action for this item."""
         return actions.ItemAction(consumer, self.parent)
 
@@ -106,11 +106,11 @@ class ConfusionConsumable(Consumable):
     def __init__(self, number_of_turns: int) -> Optional[actions.Action]:
         self.number_of_turns = number_of_turns
 
-    def get_action(self, consumer: Actor) -> SingleRangedAttackHandler:
+    def get_action(self, consumer: Actor) -> ih.SingleRangedAttackHandler:
         self.engine.message_log.add_message(
             "Select a target_class location.", color.needs_target
         )
-        return SingleRangedAttackHandler(
+        return ih.SingleRangedAttackHandler(
             self.engine,
             callback=lambda xy: actions.ItemAction(consumer, self.parent, xy),
         )
@@ -141,11 +141,11 @@ class FireballDamageConsumable(Consumable):
         self.damage = damage
         self.radius = radius
 
-    def get_action(self, consumer: Actor) -> AreaRangedAttackHandler:
+    def get_action(self, consumer: Actor) -> ih.AreaRangedAttackHandler:
         self.engine.message_log.add_message(
             "Select a target_class location.", color.needs_target
         )
-        return AreaRangedAttackHandler(
+        return ih.AreaRangedAttackHandler(
             self.engine,
             radius=self.radius,
             callback=lambda xy: actions.ItemAction(consumer, self.parent, xy),

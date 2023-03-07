@@ -7,7 +7,8 @@ import numpy as np
 import tcod
 
 from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction, EnemyPickupSuppliesAction
-from components.consumable import Supplies, Consumable
+#from components.consumable import Supplies, Consumable
+import components.consumable
 
 if TYPE_CHECKING:
     from entity import Actor, Entity
@@ -90,17 +91,17 @@ class EnemySupplyScavenger(HostileEnemy):
         Basically the HostileEnemy but will go for the nearest supplies instead of the player
     """
 
-    def get_target(self) -> Optional[Supplies]:
+    def get_target(self) -> Optional[components.consumable.Supplies]:
         """
         Get the nearest supplies to target_class
         :return: Entity to target_class. From there you can extract x,y.
                 If return is None that means there are no more supplies on the map
         """
         return self.engine.game_map.get_closest_consumable(
-            self.entity, Supplies
+            self.entity, components.consumable.Supplies
         )
 
-    def get_supplies(self, supplies: Supplies) -> None:
+    def get_supplies(self, supplies: components.consumable.Supplies) -> None:
         # ToDo: untested
         """
         Handle the enemy grabbing a supply consumable. This will remove it from the map.
@@ -117,6 +118,9 @@ class EnemySupplyScavenger(HostileEnemy):
         # Grab them if they are within reach
 
         target = self.get_target() # this also gets the chebyshev dist
+        if target is None:
+            return None
+
         dx = target.parent.x - self.entity.x
         dy = target.parent.y - self.entity.y
         distance = max(abs(dx), abs(dy))  # Chebyshev distance
