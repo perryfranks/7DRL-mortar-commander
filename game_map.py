@@ -64,8 +64,12 @@ class GameMap:
 
     # FIXME: IS THIS HOW CONSUMABLES ARE RENDERED?
     @property
-    def consumables(self) -> Iterator[Consumable]:
-        yield from (entity for entity in self.entities if isinstance(entity, Consumable))
+    def consumable_items(self) -> Iterator[Item]:
+        """
+        Return items with the consumable object attached
+        :return:
+        """
+        yield from (item for item in self.items if item.consumable is not None)
 
     def get_blocking_entity_at_location(
             self, location_x: int, location_y: int
@@ -111,7 +115,8 @@ class GameMap:
                 return actor
         return None
 
-    def get_distance(self, entity1: Entity, entity2: Entity) -> int:
+    @staticmethod
+    def get_distance(entity1: Entity, entity2: Entity) -> int:
         """
         Get distance using Chebyshev distance.
         https://en.wikipedia.org/wiki/Chebyshev_distance
@@ -131,21 +136,21 @@ class GameMap:
         """
 
         # must be careful we match class and not the instance
-        # for the every entity in the list:
+        # for the every item in the list:
         #   check it is the target_class
         #       calculate distance
         #           if the distance is min keep that as the minimum
 
-        minimum_dist = ()
+        minimum_dist = -1
         minimum_obj = None
 
-        for entity in self.entities:
-            if isinstance(entity, target_class.__class__):
+        for item in self.consumable_items:
+            if isinstance(item.consumable, target_class):
                 # This is not running
-                dist = self.get_distance(source, target_class.parent)
-                if dist <= minimum_dist:
+                dist = self.get_distance(entity1=source, entity2=item)
+                if dist <= minimum_dist or minimum_dist < 0:
                     # new contender for closest consumable
-                    minimum_obj = entity
+                    minimum_obj = item
                     minimum_dist = dist
 
         return minimum_obj

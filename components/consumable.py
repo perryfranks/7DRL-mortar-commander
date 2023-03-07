@@ -42,8 +42,8 @@ class Consumable(BaseComponent):
 
 class Supplies(Consumable):
     """
-    The supplies that everyone is trying to capture
-    For now it just has a is supplies func because I'm lazy
+    The supply_item that everyone is trying to capture
+    For now it just has a is supply_item func because I'm lazy
     """
     def __init__(self, value: int = 1):
         self.value = value

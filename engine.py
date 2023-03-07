@@ -125,7 +125,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
 
     def supplies_winner(self) -> bool:
         """
-        Returns whether friendly supplies count is higher than enemy supplies
-        :return: True if friendly supplies is higher
+        Returns whether friendly supply_item count is higher than enemy supply_item
+        :return: True if friendly supply_item is higher
         """
         return self.friendly_supplies > self.enemy_supplies

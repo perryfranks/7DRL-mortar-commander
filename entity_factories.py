@@ -15,7 +15,12 @@ supplies = Item(
     name="Supplies",
     consumable=consumable.Supplies(),
 )
-
+# fireball_scroll = Item(
+#     char="~",
+#     color=(255, 0, 0),
+#     name="Fireball Scroll",
+#     consumable=consumable.FireballDamageConsumable(damage=12, radius=3),
+# )
 # Old defines
 ##########################################################
 # Friendlies

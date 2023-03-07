@@ -73,7 +73,7 @@ class PickupSuppliesAction(Action):
         actor_location_x = self.entity.x
         actor_location_y = self.entity.y
 
-        for consumable in self.engine.game_map.consumables:
+        for consumable in self.engine.game_map.consumable_items:
             if actor_location_x == consumable.parent.x and actor_location_y == consumable.parent.y:
                 return consumable
 
@@ -85,7 +85,7 @@ class PickupSuppliesAction(Action):
 
 class EnemyPickupSuppliesAction(PickupSuppliesAction):
     """
-    Consume supplies by adding to the enemy supplies counter to tally how the level is going. This counter is within the
+    Consume supply_item by adding to the enemy supply_item counter to tally how the level is going. This counter is within the
     engine.
 
     """
@@ -96,7 +96,7 @@ class EnemyPickupSuppliesAction(PickupSuppliesAction):
 
 class FriendlyPickupSuppliesAction(PickupSuppliesAction):
     """
-    Add supplies to the friendly supplies in engine.
+    Add supply_item to the friendly supply_item in engine.
     """
 
     def perform(self) -> None:

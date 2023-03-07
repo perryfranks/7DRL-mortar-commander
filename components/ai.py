@@ -7,7 +7,7 @@ import numpy as np
 import tcod
 
 from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction, EnemyPickupSuppliesAction
-#from components.consumable import Supplies, Consumable
+# from components.consumable import Supplies, Consumable
 import components.consumable
 
 if TYPE_CHECKING:
@@ -88,49 +88,50 @@ class HostileEnemy(BaseAI):
 
 class EnemySupplyScavenger(HostileEnemy):
     """
-        Basically the HostileEnemy but will go for the nearest supplies instead of the player
+        Basically the HostileEnemy but will go for the nearest supply_item instead of the player
     """
 
-    def get_target(self) -> Optional[components.consumable.Supplies]:
+    def get_target(self) -> Optional[Item]:
         """
-        Get the nearest supplies to target_class
+        Get the nearest supply_item to target_class
         :return: Entity to target_class. From there you can extract x,y.
-                If return is None that means there are no more supplies on the map
+                If return is None that means there are no more supply_item on the map
         """
         return self.engine.game_map.get_closest_consumable(
             self.entity, components.consumable.Supplies
-        )
+        ).parent
 
-    def get_supplies(self, supplies: components.consumable.Supplies) -> None:
-        # ToDo: untested
+    def get_supplies(self, supply_item: Item) -> None:
         """
         Handle the enemy grabbing a supply consumable. This will remove it from the map.
-        :param supplies: the supply entity that is going to be consumed
+        :param supply_item: the supply entity that is going to be consumed
         :return: None
         """
-        # add the supplies to the tally
-        EnemyPickupSuppliesAction(self.entity, supplies.value)
+        # add the supply_item to the tally
+        EnemyPickupSuppliesAction(self.entity, supply_item.consumable.value)
         # remove from the map
-        self.engine.game_map.entities.remove(supplies)
+        self.engine.game_map.entities.remove(supply_item)
 
     def perform(self) -> None:
-        # Get the nearest supplies
+        # Get the nearest supply_item
         # Grab them if they are within reach
-
-        target = self.get_target() # this also gets the chebyshev dist
+        target = self.engine.game_map.get_closest_consumable(
+            self.entity, components.consumable.Supplies
+            )
+        #target = self.get_target()  # this also gets the chebyshev dist
         if target is None:
             return None
 
-        dx = target.parent.x - self.entity.x
-        dy = target.parent.y - self.entity.y
+        dx = target.x - self.entity.x
+        dy = target.y - self.entity.y
         distance = max(abs(dx), abs(dy))  # Chebyshev distance
 
         # if self.engine.game_map.visible[self.entity.x, self.entity.y]:
         if distance == 0:
-            # grab the supplies I suppose
+            # grab the supply_item I suppose
             return self.get_supplies(target)
 
-        self.path = self.get_path_to(target.parent.x, target.parent.y)
+        self.path = self.get_path_to(target.x, target.y)
 
         if self.path:
             dest_x, dest_y = self.path.pop(0)
