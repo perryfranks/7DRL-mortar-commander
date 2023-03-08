@@ -1,3 +1,4 @@
+from enum import Enum, auto
 from typing import Tuple
 
 import numpy as np  # type: ignore
@@ -56,3 +57,8 @@ down_stairs = new_tile(
     dark=(ord(">"), (0, 0, 100), (50, 50, 150)),
     light=(ord(">"), (255, 255, 255), (200, 180, 50)),
 )
+
+class RoomTypes(Enum):
+    REGULAR = auto()
+    ENEMY_SPAWN = auto()
+    FRIENDY_SPAWN = auto()

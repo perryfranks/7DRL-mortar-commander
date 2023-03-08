@@ -6,7 +6,7 @@ from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
 import tcod
 
 from game_map import GameMap
-import tile_types
+import tile_room_types
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -57,11 +57,19 @@ def get_entities_at_random(
 
 
 class RectangularRoom:
-    def __init__(self, x: int, y: int, width: int, height: int):
+    def __init__(
+            self,
+            x: int,
+            y: int,
+            width: int,
+            height: int,
+            type: tile_room_types.RoomTypes = tile_room_types.RoomTypes.REGULAR
+    ):
         self.x1 = x
         self.y1 = y
         self.x2 = x + width
         self.y2 = y + height
+        self.type = type
 
     @property
     def center(self) -> Tuple[int, int]:
@@ -156,10 +164,13 @@ def generate_dungeon(
     # Heavy lanes - split the map into slices depending on the number of spawns and contain paths to their own lanes
 
     # For light lanes:
-        # dictate spawn rooms at equally parts along the top and bottom.
-        # the size of them can be equal but it would be nice to have them random withing the limits of what works
-        # connect the spawn rooms via the regular the rooms
-        # we do want to start differentiating based on room though
+    # dictate spawn rooms at equally parts along the top and bottom.
+    # the size of them can be equal but it would be nice to have them random withing the limits of what works
+    # connect the spawn rooms via the regular the rooms
+    # we do want to start differentiating based on room though
+    # how we define and connect rooms is in a line. This dosent mesh well with lanes
+    # what if we constrain the area and then force the spawners and place tunnels
+    # that let us connect to the created dungeon
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
@@ -205,6 +216,7 @@ def generate_dungeon(
 
     return dungeon
 
+
 def default_generation(
         max_rooms: int,
         room_min_size: int,
@@ -212,7 +224,7 @@ def default_generation(
         map_width: int,
         map_height: int,
         engine: Engine,
-    ) -> GameMap:
+) -> GameMap:
     """Generate a new dungeon map."""
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])

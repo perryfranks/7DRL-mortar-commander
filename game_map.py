@@ -7,7 +7,7 @@ from tcod.console import Console
 import components.base_components
 from components.consumable import Consumable, Supplies
 from entity import Actor, Item
-import tile_types
+import tile_room_types
 
 if TYPE_CHECKING:
     from engine import Engine
