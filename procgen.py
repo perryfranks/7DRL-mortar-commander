@@ -5,6 +5,7 @@ from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
 
 import tcod
 
+import exceptions
 from game_map import GameMap
 import tile_room_types
 
@@ -179,17 +180,129 @@ def generate_dungeon(
     center_of_last_room = (0, 0)
 
     # The padding to provide to the top and bottom on the screen. I think 1/8 between them is fair
-    padding = map_height/16
-    spawn
+    padding = map_height / 16
+    # for now lets duplicate
+    enemy_spawn_interval = map_width / enemy_spawn_rooms
 
-    regular_dungeon = default_generation(
-            max_rooms=max_rooms,
-            room_min_size=room_min_size,
-            room_max_size=room_max_size,
-            map_width=map_width,
-            map_height=map_height - padding,
-            engine=engine
+    regular_dungeon = padded_generation(
+        max_rooms=max_rooms,
+        room_min_size=room_min_size,
+        room_max_size=room_max_size,
+        map_width=map_width,
+        # I don't think this will work how we want it to. We might to bake the padding in
+        map_height=map_height,
+        engine=engine,
+        padding_total=padding
+    )
+
+    for i in range(enemy_spawn_interval):
+        # create the spawn room
+        midpoint = enemy_spawn_interval / 2  # also width
+        quarter_interval = enemy_spawn_interval / 4
+        x = midpoint - quarter_interval
+        y = midpoint + quarter_interval
+        height = padding - 2
+
+        spawn_room = RectangularRoom(
+            x=x,
+            y=y,
+            width=enemy_spawn_interval / 2,
+            height=height,
+            type=tile_room_types.RoomTypes.ENEMY_SPAWN
         )
+        # now what? Connect it to the main land
+        dungeon = connect_spawn(spawn_room, regular_dungeon, True)
+
+    # Still need to get this being run from main
+    return dungeon
+
+# FIXME: this needs changing
+def connect_spawn(room: RectangularRoom, dungeon: GameMap, isEnemy: bool) -> GameMap:
+    """
+    Connect a spawn room with the rest of the dungeon.
+    If isEnemy is true then the movement is down for making a tunnel
+    :return: Will return the modified map
+    """
+
+    # tunnel until we get a dug space then finish
+    # write the solution for top down and then generalise it
+    # we want the first tile with type floor and then dig
+    # to that location from the center of our room
+    pass
+
+
+def make_room(
+        x: int,
+        y: int,
+        room_width: int,
+        room_height: int,
+        type: tile_room_types.RoomTypes = tile_room_types.RoomTypes.REGULAR
+) -> RectangularRoom:
+    """
+    Handle making a room.
+    Incredibly simple for now. May need more logic later and reduces duplication.
+    """
+    return RectangularRoom(x=x, y=y, width=room_width, height=room_height, type=type)
+
+
+def padded_generation(
+        max_rooms: int,
+        room_min_size: int,
+        room_max_size: int,
+        map_width: int,
+        map_height: int,
+        engine: Engine,
+        padding_total: int
+) -> GameMap:
+    """Generate a new dungeon map with padding at the top and bottom equal to padding_total / 2."""
+    if padding_total == 0:
+        raise exceptions.Impossible("Padding size of given was given to padded_generation while building dungeon.")
+
+    player = engine.player
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
+
+    rooms: List[RectangularRoom] = []
+
+    center_of_last_room = (0, 0)
+
+    for r in range(max_rooms):
+        room_width = random.randint(room_min_size, room_max_size)
+        room_height = random.randint(room_min_size, room_max_size)
+
+        # x = random.randint(0, dungeon.width - room_width - 1)
+        # y = random.randint(0, dungeon.height - room_height - 1)
+        x = random.randint(0, dungeon.width - room_width - 1)
+        y = random.randint(0 + padding_total / 2, dungeon.height - room_height - 1 - padding_total)
+
+        # "RectangularRoom" class makes rectangles easier to work with
+        new_room = make_room(x, y, room_width, room_height, tile_room_types.RoomTypes.REGULAR)
+
+        # Run through the other rooms and see if they intersect with this one.
+        if any(new_room.intersects(other_room) for other_room in rooms):
+            continue  # This room intersects, so go to the next attempt.
+        # If there are no intersections then the room is valid.
+
+        # Dig out this rooms inner area.
+        dungeon.tiles[new_room.inner] = tile_types.floor
+
+        if len(rooms) == 0:
+            # The first room, where the player starts.
+            player.place(*new_room.center, dungeon)
+        else:  # All rooms after the first.
+            # Dig out a tunnel between this room and the previous one.
+            for x, y in tunnel_between(rooms[-1].center, new_room.center):
+                dungeon.tiles[x, y] = tile_types.floor
+
+            center_of_last_room = new_room.center
+
+        # needs to change when we get around to it
+        place_entities(new_room, dungeon, engine.game_world.current_floor)
+
+        # dungeon.tiles[center_of_last_room] = tile_types.down_stairs
+        # dungeon.downstairs_location = center_of_last_room
+
+        # Finally, append the new room to the list.
+        rooms.append(new_room)
 
     return dungeon
 
