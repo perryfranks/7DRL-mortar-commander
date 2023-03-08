@@ -136,7 +136,83 @@ def generate_dungeon(
         map_width: int,
         map_height: int,
         engine: Engine,
+        friendly_spawn_rooms: int = 0,
+        enemy_spawn_rooms: int = 0,
 ) -> GameMap:
+    """Generate a new dungeon map."""
+
+    # if we don't have spawn rooms specified default to the old, generation method
+    if friendly_spawn_rooms == enemy_spawn_rooms == 0:
+        return default_generation(
+            max_rooms=max_rooms,
+            room_min_size=room_min_size,
+            room_max_size=room_max_size,
+            map_width=map_width,
+            map_height=map_height,
+            engine=engine
+        )
+
+    # light lanes - have the spawn rooms creating some lanes and leave the rest of the generation faily unchanged
+    # Heavy lanes - split the map into slices depending on the number of spawns and contain paths to their own lanes
+
+    # For light lanes:
+        # dictate spawn rooms at equally parts along the top and bottom.
+        # the size of them can be equal but it would be nice to have them random withing the limits of what works
+        # connect the spawn rooms via the regular the rooms
+        # we do want to start differentiating based on room though
+    player = engine.player
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
+
+    rooms: List[RectangularRoom] = []
+
+    center_of_last_room = (0, 0)
+
+    for r in range(max_rooms):
+        room_width = random.randint(room_min_size, room_max_size)
+        room_height = random.randint(room_min_size, room_max_size)
+
+        x = random.randint(0, dungeon.width - room_width - 1)
+        y = random.randint(0, dungeon.height - room_height - 1)
+
+        # "RectangularRoom" class makes rectangles easier to work with
+        new_room = RectangularRoom(x, y, room_width, room_height)
+
+        # Run through the other rooms and see if they intersect with this one.
+        if any(new_room.intersects(other_room) for other_room in rooms):
+            continue  # This room intersects, so go to the next attempt.
+        # If there are no intersections then the room is valid.
+
+        # Dig out this rooms inner area.
+        dungeon.tiles[new_room.inner] = tile_types.floor
+
+        if len(rooms) == 0:
+            # The first room, where the player starts.
+            player.place(*new_room.center, dungeon)
+        else:  # All rooms after the first.
+            # Dig out a tunnel between this room and the previous one.
+            for x, y in tunnel_between(rooms[-1].center, new_room.center):
+                dungeon.tiles[x, y] = tile_types.floor
+
+            center_of_last_room = new_room.center
+
+        place_entities(new_room, dungeon, engine.game_world.current_floor)
+
+        dungeon.tiles[center_of_last_room] = tile_types.down_stairs
+        dungeon.downstairs_location = center_of_last_room
+
+        # Finally, append the new room to the list.
+        rooms.append(new_room)
+
+    return dungeon
+
+def default_generation(
+        max_rooms: int,
+        room_min_size: int,
+        room_max_size: int,
+        map_width: int,
+        map_height: int,
+        engine: Engine,
+    ) -> GameMap:
     """Generate a new dungeon map."""
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
