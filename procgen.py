@@ -178,41 +178,18 @@ def generate_dungeon(
 
     center_of_last_room = (0, 0)
 
-    for r in range(max_rooms):
-        room_width = random.randint(room_min_size, room_max_size)
-        room_height = random.randint(room_min_size, room_max_size)
+    # The padding to provide to the top and bottom on the screen. I think 1/8 between them is fair
+    padding = map_height/16
+    spawn
 
-        x = random.randint(0, dungeon.width - room_width - 1)
-        y = random.randint(0, dungeon.height - room_height - 1)
-
-        # "RectangularRoom" class makes rectangles easier to work with
-        new_room = RectangularRoom(x, y, room_width, room_height)
-
-        # Run through the other rooms and see if they intersect with this one.
-        if any(new_room.intersects(other_room) for other_room in rooms):
-            continue  # This room intersects, so go to the next attempt.
-        # If there are no intersections then the room is valid.
-
-        # Dig out this rooms inner area.
-        dungeon.tiles[new_room.inner] = tile_types.floor
-
-        if len(rooms) == 0:
-            # The first room, where the player starts.
-            player.place(*new_room.center, dungeon)
-        else:  # All rooms after the first.
-            # Dig out a tunnel between this room and the previous one.
-            for x, y in tunnel_between(rooms[-1].center, new_room.center):
-                dungeon.tiles[x, y] = tile_types.floor
-
-            center_of_last_room = new_room.center
-
-        place_entities(new_room, dungeon, engine.game_world.current_floor)
-
-        dungeon.tiles[center_of_last_room] = tile_types.down_stairs
-        dungeon.downstairs_location = center_of_last_room
-
-        # Finally, append the new room to the list.
-        rooms.append(new_room)
+    regular_dungeon = default_generation(
+            max_rooms=max_rooms,
+            room_min_size=room_min_size,
+            room_max_size=room_max_size,
+            map_width=map_width,
+            map_height=map_height - padding,
+            engine=engine
+        )
 
     return dungeon
 
