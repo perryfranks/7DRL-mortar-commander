@@ -2,6 +2,7 @@ from enum import Enum, auto
 from typing import Tuple
 
 import numpy as np  # type: ignore
+import graphics.generic_colors as gc
 
 # Tile graphics structured type compatible with Console.tiles_rgb
 # whatever that means
@@ -44,6 +45,18 @@ floor = new_tile(
     transparent=True,
     dark=(ord(" "), (255, 255, 255), (50, 50, 150)),
     light=(ord(" "), (255, 255, 255), (200, 180, 50)),
+)
+spawn_floor_enemy = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord(" "), (255, 255, 255), gc.dark_red),
+    light=(ord(" "), (255, 255, 255), gc.dark_red),
+)
+spawn_floor_friendly = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord(" "), (255, 255, 255), gc.dark_green),
+    light=(ord(" "), (255, 255, 255), gc.dark_green),
 )
 wall = new_tile(
     walkable=False,

@@ -28,7 +28,7 @@ class GameMap:
         self.engine = engine
         self.width, self.height = width, height
         self.entities = set(entities)
-        self.tiles = np.full((width, height), fill_value=tile_types.wall, order="F")
+        self.tiles = np.full((width, height), fill_value=tile_room_types.wall, order="F")
 
         self.visible = np.full(
             (width, height), fill_value=False, order="F"
@@ -170,7 +170,7 @@ class GameMap:
         console.tiles_rgb[0: self.width, 0: self.height] = np.select(
             condlist=[self.visible, self.explored],
             choicelist=[self.tiles["light"], self.tiles["dark"]],
-            default=tile_types.SHROUD,
+            default=tile_room_types.SHROUD,
         )
 
         entities_sorted_for_rendering = sorted(

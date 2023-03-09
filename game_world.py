@@ -45,4 +45,6 @@ class GameWorld:
             map_width=self.map_width,
             map_height=self.map_height,
             engine=self.engine,
+            friendly_spawn_rooms=3,
+            enemy_spawn_rooms=3,
         )
