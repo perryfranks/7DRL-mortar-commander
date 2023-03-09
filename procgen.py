@@ -273,6 +273,9 @@ def connect_spawn(room: RectangularRoom, dungeon: GameMap, is_enemy: bool) -> Ga
         #interval = reversed(interval)
 
     # FIXME: there is some strange bug here
+    # FIXME: index 106 is out of bounds for axis 0 with size 80
+    # FIXME: add cases for getting to the edge
+    #
     for i in interval:
         if dungeon.tiles[i, new_start[1]] == tile_room_types.floor:
             return tunnel(new_start, (i, new_start[1]), dungeon)
