@@ -17,5 +17,5 @@ welcome_messages = [
 
 
 def get_welcome_message() -> str:
-    index = random.randint(0, len(welcome_messages))
+    index = random.randint(0, len(welcome_messages) - 1)
     return welcome_messages[index]

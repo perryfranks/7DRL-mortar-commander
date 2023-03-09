@@ -62,7 +62,6 @@ class GameMap:
     def items(self) -> Iterator[Item]:
         yield from (entity for entity in self.entities if isinstance(entity, Item))
 
-    # FIXME: IS THIS HOW CONSUMABLES ARE RENDERED?
     @property
     def consumable_items(self) -> Iterator[Item]:
         """

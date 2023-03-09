@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
+from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING, Optional
 
 import tcod
 
@@ -216,7 +216,7 @@ def generate_dungeon(
         )
         dungeon.tiles[spawn_room.inner] = tile_room_types.spawn_floor_enemy
         # Connect it to the main land
-        dungeon = connect_spawn(spawn_room, dungeon, True)
+        dungeon = connect_spawn(spawn_room, dungeon, True, 2)
 
     friendly_interval = map_width // friendly_spawn_rooms
     quarter_interval = friendly_interval // 4
@@ -234,25 +234,31 @@ def generate_dungeon(
             type=tile_room_types.RoomTypes.FRIENDY_SPAWN
         )
         dungeon.tiles[spawn_room.inner] = tile_room_types.spawn_floor_friendly
-        dungeon = connect_spawn(spawn_room, dungeon, False)
+        dungeon = connect_spawn(spawn_room, dungeon, False, 2)
 
     return dungeon
 
 
-def connect_spawn(room: RectangularRoom, dungeon: GameMap, is_enemy: bool) -> GameMap:
+def connect_spawn(room: RectangularRoom, dungeon: GameMap, is_enemy: bool, tunnel_ratio: int) -> Optional[GameMap]:
     """
     Connect a spawn room with the rest of the dungeon.
     If is_enemy is true then the movement is down for making a tunnel
+    :param tunnel_ratio: as a ratio the length of the dungeon to climb when looking for a tunnel. Cannot equal 0
     :return: Will return the modified map
     """
+    if tunnel_ratio == 0:
+        return None
+
     start = (room.center[0], room.y2)
     # range doesn't like a range like range(9,1) so we need to normalise first
+    height_ratio = dungeon.height // tunnel_ratio
+    width_ratio = dungeon.width // tunnel_ratio
     if not is_enemy:
         start = (room.center[0], room.y1)
-        interval = range(dungeon.height // 2, start[1])
+        interval = range(height_ratio, start[1])
         interval = reversed(interval)
     else:
-        interval = range(start[1], dungeon.height // 2)
+        interval = range(start[1], height_ratio)
     last = 0
     for i in interval:
         last = i
@@ -265,18 +271,21 @@ def connect_spawn(room: RectangularRoom, dungeon: GameMap, is_enemy: bool) -> Ga
     # if on left half move right. Opposite left
     # new_start = (start[0], last)
     new_start = (start[0] + 1, last)
-    if new_start[0] < (dungeon.width // 2):
-        interval = range(new_start[0], new_start[0] + dungeon.width // 2)
+    if new_start[0] < (width_ratio):
+        interval = range(new_start[0], new_start[0] + width_ratio)
     else:
-        interval = range(new_start[0] + dungeon.width // 2, new_start[0] - 1, -1)
+        interval = range(new_start[0] + width_ratio, new_start[0] - 1, -1)
         # interval = range(new_start[0] + dungeon.width // 2, new_start[0] - 1)
-        #interval = reversed(interval)
+        # interval = reversed(interval)
 
     # FIXME: there is some strange bug here
     # FIXME: index 106 is out of bounds for axis 0 with size 80
     # FIXME: add cases for getting to the edge
     #
     for i in interval:
+        # Be lazy and just check if we're out of bounds
+        if i >= dungeon.width or i < 0:
+            continue
         if dungeon.tiles[i, new_start[1]] == tile_room_types.floor:
             return tunnel(new_start, (i, new_start[1]), dungeon)
 
@@ -316,13 +325,14 @@ def padded_generation(
         engine: Engine,
         padding_total: int
 ) -> GameMap:
-    """Generate a new dungeon map with padding at the top and bottom equal to padding_total / 2."""
-    print("padded gen ran")
+    """
+    Generate a new dungeon map with padding at the top and bottom equal to padding_total / 2.
+    Does not place the player.
+    """
     if padding_total == 0:
         raise exceptions.Impossible("Padding size of given was given to padded_generation while building dungeon.")
 
-    player = engine.player
-    dungeon = GameMap(engine, map_width, map_height, entities=[player])
+    dungeon = GameMap(engine, map_width, map_height, entities=[])
 
     rooms: List[RectangularRoom] = []
 
@@ -342,17 +352,20 @@ def padded_generation(
 
         dungeon.tiles[new_room.inner] = tile_room_types.floor
 
-        if len(rooms) == 0:
-            # The first room, where the player starts.
-            player.place(*new_room.center, dungeon)
-        else:  # All rooms after the first.
+        # if len(rooms) == 0:
+        #     # The first room, where the player starts.
+        #     player.place(*neNw_room.center, dungeon)
+        # else:  # All rooms after the first.
+        #     # Dig out a tunnel between this room and the previous one.
+        #     for x, y in tunnel_between(rooms[-1].center, new_room.center):
+        #         dungeon.tiles[x, y] = tile_room_types.floor
+
+        if len(rooms) > 0:
             # Dig out a tunnel between this room and the previous one.
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_room_types.floor
 
-            center_of_last_room = new_room.center
-
-        # needs to change when we get around to it
+        place_player_center(engine, dungeon)
         place_entities(new_room, dungeon, engine.game_world.current_floor)
 
         # Can add stairs here if needed. Will be added to final room
@@ -413,3 +426,13 @@ def default_generation(
         rooms.append(new_room)
 
     return dungeon
+
+
+def place_player_center(engine: Engine, dungeon: GameMap) -> None:
+    player = engine.player
+    dungeon.entities.add(player)
+    player.place(
+        dungeon.width // 2,
+        dungeon.height // 2,
+        dungeon
+    )
