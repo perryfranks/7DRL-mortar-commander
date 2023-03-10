@@ -94,21 +94,30 @@ class RectangularRoom:
         )
 
 
-def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int, ) -> None:
+def place_entities(
+        room: RectangularRoom,
+        dungeon: GameMap,
+        floor_number: int,
+        place_monters: bool = True,
+        place_items: bool = True
+) -> None:
     # todo: remove monsters
-    number_of_monsters = random.randint(
-        0, get_max_value_for_floor(weights.max_monsters_by_floor, floor_number)
-    )
-    number_of_items = random.randint(
-        0, get_max_value_for_floor(weights.max_items_by_floor, floor_number)
-    )
-
-    monsters: List[Entity] = get_entities_at_random(
-        weights.enemy_chances, number_of_monsters, floor_number
-    )
-    items: List[Entity] = get_entities_at_random(
-        weights.item_chances, number_of_items, floor_number
-    )
+    items: List[Entity] = []
+    monsters: List[Entity] = []
+    if place_monters:
+        number_of_monsters = random.randint(
+            0, get_max_value_for_floor(weights.max_monsters_by_floor, floor_number)
+        )
+        monsters = get_entities_at_random(
+            weights.enemy_chances, number_of_monsters, floor_number
+        )
+    if place_items:
+        number_of_items = random.randint(
+            0, get_max_value_for_floor(weights.max_items_by_floor, floor_number)
+        )
+        items = get_entities_at_random(
+            weights.item_chances, number_of_items, floor_number
+        )
 
     for entity in monsters + items:
         x = random.randint(room.x1 + 1, room.x2 - 1)
@@ -217,6 +226,8 @@ def generate_dungeon(
         dungeon.tiles[spawn_room.inner] = tile_room_types.spawn_floor_enemy
         # Connect it to the main land
         dungeon = connect_spawn(spawn_room, dungeon, True, 2)
+        # Place enemies
+        place_entities(room=spawn_room, dungeon=dungeon,floor_number=engine.game_world.current_floor, place_items=False)
 
     friendly_interval = map_width // friendly_spawn_rooms
     quarter_interval = friendly_interval // 4
@@ -366,7 +377,12 @@ def padded_generation(
                 dungeon.tiles[x, y] = tile_room_types.floor
 
         place_player_center(engine, dungeon)
-        place_entities(new_room, dungeon, engine.game_world.current_floor)
+        place_entities(
+            room=new_room,
+            dungeon=dungeon,
+            floor_number=engine.game_world.current_floor,
+            place_monters=False
+        )
 
         # Can add stairs here if needed. Will be added to final room
         # Finally, append the new room to the list.

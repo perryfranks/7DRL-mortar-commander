@@ -15,11 +15,11 @@ from entity import Actor
 # from game_map import GameWorld
 from game_world import GameWorld
 from graphics import color
-from graphics.titles import get_welcome_message, TITLE, CREDITS
+from graphics.titles import get_welcome_message, TITLE, CREDITS, title_multiline
 from save_functions import load_game
 
 # Load the background image and remove the alpha channel.
-background_image = tcod.image.load("graphics/menu_background.png")[:, :, :3]
+background_image = tcod.image.load("graphics/title_screen.png")[:, :, :3]
 
 
 # having these things be hard coded could be fixed.
@@ -107,7 +107,6 @@ class MainMenu(input_handlers.BaseEventHandler):
     def on_render(self, console: tcod.Console) -> None:
         """Render the main menu on a background image."""
         console.draw_semigraphics(background_image, 0, 0)
-
         console.print(
             console.width // 2,
             console.height // 2 - 4,
@@ -115,6 +114,16 @@ class MainMenu(input_handlers.BaseEventHandler):
             fg=color.menu_title,
             alignment=tcod.CENTER,
         )
+        # count = len(title_multiline)
+        # for line in title_multiline:
+        #     console.print(
+        #         console.width // 2,
+        #         console.height // 2 - 4 - count,
+        #         line,
+        #         fg=color.menu_title,
+        #         alignment=tcod.CENTER,
+        #     )
+        #     count += 1
         console.print(
             console.width // 2,
             console.height - 2,

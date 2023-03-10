@@ -8,14 +8,14 @@ if TYPE_CHECKING:
     from entity import Entity
 
 max_items_by_floor = [
-    (1, 1),
-    (4, 2),
+    (1, 25),
+    (4, 35),
 ]
 
 max_monsters_by_floor = [
-    (1, 2),
-    (4, 3),
-    (6, 5),
+    (1, 36),
+    (4, 10),
+    (6, 20),
 ]
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {

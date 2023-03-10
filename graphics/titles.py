@@ -4,15 +4,36 @@ or other items that are mostly text strings mostly just printed to the user
 """
 import random
 
-TITLE = "Name"
+TITLE = "MORTAR COMMAND"
+# Unfortunatly this doesn't render correctly for me. Will shelve for now
+title_multiline = [
+    "  __  __         _               ___                              _ ",
+    " |  \\/  |___ _ _| |_ __ _ _ _   / __|___ _ __  _ __  __ _ _ _  __| |",
+    " | |\\/| / _ \\ '_|  _/ _` | '_| | (__/ _ \\ '  \\| '  \\/ _` | ' \\/ _` |",
+    " |_|  |_\\___/_|  \\__\\__,_|_|    \\___\\___/_|_|_|_|_|_\\__,_|_||_\\__,_|",
+]
+
 
 CREDITS_NAMES = "Perry Franks"
 CREDITS = "By " + CREDITS_NAMES
 
 welcome_messages = [
-    "Hello and welcome, adventurer, to yet another dungeon!",
-    "Welcome to the depths",
-    "Say friend and enter",
+    "I'm the last one left.",
+    "Welcome to hell.",
+    "The major's dead.",
+    "How will I protect these civilians.",
+    "So many mouths to feed.",
+    "I've never seen a sky like that.",
+    "It's just me.",
+    "Radio's dead. Commander's dead. We're Dead.",
+    "This is Platoon Echo Zebra Niner - come in HQ... please god.",
+    "I need to help these people.",
+    "I need help.",
+    "We've failed.",
+    "There's no hope.",
+    "Goddamn this war.",
+    "What's the point in winning a war if everyone's dead.",
+    "My gun's jammed with mud.",
 ]
 
 
