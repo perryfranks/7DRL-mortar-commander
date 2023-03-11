@@ -95,7 +95,7 @@ class EnemySupplyScavenger(HostileEnemy):
         """
         Get the nearest supply_item to target_class
         :return: Entity to target_class. From there you can extract x,y.
-                If return is None that means there are no more supply_item on the map
+                If return is None that means there are no more supply_item on the game_map
         """
         return self.engine.game_map.get_closest_consumable(
             self.entity, components.consumable.Supplies
@@ -103,13 +103,13 @@ class EnemySupplyScavenger(HostileEnemy):
 
     def get_supplies(self, supply_item: Item) -> None:
         """
-        Handle the enemy grabbing a supply consumable. This will remove it from the map.
+        Handle the enemy grabbing a supply consumable. This will remove it from the game_map.
         :param supply_item: the supply entity that is going to be consumed
         :return: None
         """
         # add the supply_item to the tally
         EnemyPickupSuppliesAction(self.entity, supply_item.consumable.value)
-        # remove from the map
+        # remove from the game_map
         self.engine.game_map.entities.remove(supply_item)
 
     def perform(self) -> None:

@@ -12,7 +12,6 @@ DOWN_KEYS = {}
 LEFT_KEYS = {}
 RIGHT_KEYS = {}
 # can me get the union of these sets?
-CONFIRM_KEYS = {}
 ESCAPE_KEYS = {}
 
 # action level
@@ -22,7 +21,7 @@ MOVEMENT_DELTAS = {
     "DOWN": (0, 1),
     "LEFT": (-1, 0),
     "RIGHT": (1, 0),
-    "UP_RIGHT":(1, -1),
+    "UP_RIGHT": (1, -1),
     "UP_LEFT": (-1, -1),
     "DOWN_RIGHT": (1, 1),
     "DOWN_LEFT": (-1, 1),
@@ -72,4 +71,9 @@ WAIT_KEYS = {
 CONFIRM_KEYS = {
     tcod.event.K_RETURN,
     tcod.event.K_KP_ENTER,
+}
+
+FIRE_KEYS = {
+    tcod.event.K_f,
+    tcod.event.K_SPACE,
 }

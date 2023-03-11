@@ -32,9 +32,9 @@ class GameWorld:
 
     def generate_floor(self) -> None:
         """
-        Generate a new dungeon and assign it to the current game map,
+        Generate a new dungeon and assign it to the current game game_map,
         this will overwrite the old dungeon immediately
-        :return: None, as the output is already assigned to the engine's game map
+        :return: None, as the output is already assigned to the engine's game game_map
         """
         self.current_floor += 1
 

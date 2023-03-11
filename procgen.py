@@ -169,7 +169,7 @@ def generate_dungeon(
     :param engine:
     :param friendly_spawn_rooms: number of friendly spawn rooms to have     
     :param enemy_spawn_rooms:
-    :param padding_total_ratio: NOT IMPLEMENTED the ratio of the map height that should be for spawn rooms.
+    :param padding_total_ratio: NOT IMPLEMENTED the ratio of the game_map height that should be for spawn rooms.
             Will be divided between top and bottom
     :return:
     """
@@ -185,7 +185,7 @@ def generate_dungeon(
         )
 
     # light lanes - have the spawn rooms creating some lanes and leave the rest of the generation faily unchanged
-    # Heavy lanes - split the map into slices depending on the number of spawns and contain paths to their own lanes
+    # Heavy lanes - split the game_map into slices depending on the number of spawns and contain paths to their own lanes
 
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
@@ -255,7 +255,7 @@ def connect_spawn(room: RectangularRoom, dungeon: GameMap, is_enemy: bool, tunne
     Connect a spawn room with the rest of the dungeon.
     If is_enemy is true then the movement is down for making a tunnel
     :param tunnel_ratio: as a ratio the length of the dungeon to climb when looking for a tunnel. Cannot equal 0
-    :return: Will return the modified map
+    :return: Will return the modified game_map
     """
     if tunnel_ratio == 0:
         return None
@@ -337,7 +337,7 @@ def padded_generation(
         padding_total: int
 ) -> GameMap:
     """
-    Generate a new dungeon map with padding at the top and bottom equal to padding_total / 2.
+    Generate a new dungeon game_map with padding at the top and bottom equal to padding_total / 2.
     Does not place the player.
     """
     if padding_total == 0:
@@ -399,7 +399,7 @@ def default_generation(
         map_height: int,
         engine: Engine,
 ) -> GameMap:
-    """Generate a new dungeon map."""
+    """Generate a new dungeon game_map."""
     print("default gen ran")
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])

@@ -37,17 +37,10 @@ def game_specific_setup(player: Actor) -> None:
     :rtype: None
     """
 
-    dagger = copy.deepcopy(entity_factories.dagger)
-    leather_armor = copy.deepcopy(entity_factories.leather_armor)
-
-    dagger.parent = player.inventory
-    leather_armor.parent = player.inventory
-
-    player.inventory.items.append(dagger)
-    player.equipment.toggle_equip(dagger, add_message=False)
-
-    player.inventory.items.append(leather_armor)
-    player.equipment.toggle_equip(leather_armor, add_message=False)
+    mortar = copy.deepcopy(entity_factories.basic_mortar)
+    mortar.parent = player.inventory
+    player.inventory.items.append(mortar)
+    player.equipment.toggle_equip(mortar, add_message=False)
 
 
 def new_game(
@@ -68,9 +61,9 @@ def new_game(
     :type room_min_size: int
     :param room_max_size: maximum size for each room
     :type room_max_size: int
-    :param map_height:  height of the map that room and corridors are placed in
+    :param map_height:  height of the game_map that room and corridors are placed in
     :type map_height: int
-    :param map_width  width of the map that rooms and corridors are placed in
+    :param map_width  width of the game_map that rooms and corridors are placed in
     :type map_width: int
     :returns: the Engine object to run the game
     """

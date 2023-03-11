@@ -15,6 +15,20 @@ supplies = Item(
     name="Supplies",
     consumable=consumable.Supplies(),
 )
+
+
+basic_mortar = Item(
+    char="|",
+    color=graphics.our_colors.supplies,
+    name="Basic Mortar",
+    equippable=equippable.BasicMortar(
+        range_increments=[
+            (0, 5),
+            (2, 2),
+            (4, 1),
+        ]
+    )
+)
 # fireball_scroll = Item(
 #     char="~",
 #     color=(255, 0, 0),

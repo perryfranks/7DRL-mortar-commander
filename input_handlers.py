@@ -15,11 +15,13 @@ from actions import (
     PlayerMovementAction,
 
 )
+from components.consumable import BasicMortarShell
+from components.equippable import BasicMortar
 from graphics import color
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Item
+    from entity import Item, Actor
 
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
@@ -349,7 +351,7 @@ class InventoryDropHandler(InventoryEventHandler):
 
 
 class SelectIndexHandler(AskUserEventHandler):
-    """Handles asking the user for an index on the map."""
+    """Handles asking the user for an index on the game_map."""
 
     def __init__(self, engine: Engine):
         """Sets the cursor to the player when this handler is constructed."""
@@ -380,7 +382,7 @@ class SelectIndexHandler(AskUserEventHandler):
             dx, dy = key_actions.MOVE_KEYS[key]
             x += dx * modifier
             y += dy * modifier
-            # Clamp the cursor index to the map size.
+            # Clamp the cursor index to the game_map size.
             x = max(0, min(x, self.engine.game_map.width - 1))
             y = max(0, min(y, self.engine.game_map.height - 1))
             self.engine.mouse_location = x, y
@@ -401,6 +403,27 @@ class SelectIndexHandler(AskUserEventHandler):
     def on_index_selected(self, x: int, y: int) -> Optional[ActionOrHandler]:
         """Called when an index is selected."""
         raise NotImplementedError()
+
+
+class MortarAreaAttackHandler(SelectIndexHandler):
+    """Handle firing a mortar shell."""
+
+    def __init__(
+            self, engine: Engine, radius: int, mortar: BasicMortar, shell: BasicMortarShell
+    ):
+        super().__init__(engine)
+        self.mortar = mortar
+        self.shell = shell
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Highlight tiles inside the mortar's range."""
+        super().on_render(console)
+        x, y = self.engine.mouse_location
+        console.tiles_rgb["bg"][x, y] = color.white
+        console.tiles_rgb["fg"][x, y] = color.black
+
+    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        return MainGameEventHandler(self.engine)
 
 
 class LookHandler(SelectIndexHandler):
@@ -425,7 +448,6 @@ class SingleRangedAttackHandler(SelectIndexHandler):
         return self.callback((x, y))
 
 
-# TODO: there may be a bug here
 class AreaRangedAttackHandler(SelectIndexHandler):
     """Handles targeting an area within a given radius. Any entity within the area will be affected."""
 
@@ -458,53 +480,6 @@ class AreaRangedAttackHandler(SelectIndexHandler):
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         return self.callback((x, y))
-
-
-class MainGameEventHandler(EventHandler):
-    """
-    Effectively passes up the correct action to perform based on a keydown event.
-    To add more actions/conditions to existing actions this class should be open to extension
-
-    """
-
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        action: Optional[Action] = None
-
-        key = event.sym
-        modifier = event.mod
-
-        player = self.engine.player
-
-        if key == tcod.event.K_PERIOD and modifier & (
-                tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT
-        ):
-            return actions.TakeStairsAction(player)
-
-        if key in key_actions.MOVE_KEYS:
-            dx, dy = key_actions.MOVE_KEYS[key]
-            # action = BumpAction(player, dx, dy)
-            action = PlayerMovementAction(player, dx, dy)
-        elif key in key_actions.WAIT_KEYS:
-            action = WaitAction(player)
-
-        elif key == tcod.event.K_ESCAPE:
-            raise SystemExit()
-        elif key == tcod.event.K_v:
-            return HistoryViewer(self.engine)
-
-        elif key == tcod.event.K_g:
-            action = PickupAction(player)
-
-        elif key == tcod.event.K_i:
-            return InventoryActivateHandler(self.engine)
-        elif key == tcod.event.K_d:
-            return InventoryDropHandler(self.engine)
-        elif key == tcod.event.K_c:
-            return CharacterScreenEventHandler(self.engine)
-        elif key == tcod.event.K_SLASH:
-            return LookHandler(self.engine)
-        # No valid key was pressed
-        return action
 
 
 class GameOverEventHandler(EventHandler):
@@ -640,3 +615,66 @@ class ErrorScreen(BaseEventHandler):
 
     def on_exit(self) -> None:
         return None
+
+
+class MainGameEventHandler(EventHandler):
+    """
+    Effectively passes up the correct action to perform based on a keydown event.
+    To add more actions/conditions to existing actions this class should be open to extension
+
+    """
+
+    def use_mortar(self, engine: Engine, player: Actor) -> Optional[MortarAreaAttackHandler]:
+        action = MortarAreaAttackHandler(
+            self.engine,
+            self.get_mortar_range(player),
+        )
+        return action
+
+    def get_mortar_range(self, player: Actor) -> int:
+        for i in player.inventory.items:
+            if isinstance(i.equippable, BasicMortar):
+                return i.equippable.get_range
+        return -1
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        action: Optional[Action] = None
+
+        key = event.sym
+        modifier = event.mod
+
+        player = self.engine.player
+
+        if key == tcod.event.K_PERIOD and modifier & (
+                tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT
+        ):
+            return actions.TakeStairsAction(player)
+
+        if key in key_actions.MOVE_KEYS:
+            dx, dy = key_actions.MOVE_KEYS[key]
+            # action = BumpAction(player, dx, dy)
+            action = PlayerMovementAction(player, dx, dy)
+        elif key in key_actions.WAIT_KEYS:
+            action = WaitAction(player)
+
+        elif key in key_actions.FIRE_KEYS:
+            action = self.use_mortar(self.engine, player=player)
+
+        elif key == tcod.event.K_ESCAPE:
+            raise SystemExit()
+        elif key == tcod.event.K_v:
+            return HistoryViewer(self.engine)
+
+        elif key == tcod.event.K_g:
+            action = PickupAction(player)
+
+        elif key == tcod.event.K_i:
+            return InventoryActivateHandler(self.engine)
+        elif key == tcod.event.K_d:
+            return InventoryDropHandler(self.engine)
+        elif key == tcod.event.K_c:
+            return CharacterScreenEventHandler(self.engine)
+        elif key == tcod.event.K_SLASH:
+            return LookHandler(self.engine)
+        # No valid key was pressed
+        return action

@@ -155,12 +155,12 @@ class GameMap:
         return minimum_obj
 
     def in_bounds(self, x: int, y: int) -> bool:
-        """Return True if x and y are inside the bounds of this map."""
+        """Return True if x and y are inside the bounds of this game_map."""
         return 0 <= x < self.width and 0 <= y < self.height
 
     def render(self, console: Console) -> None:
         """
-        Renders the map.
+        Renders the game_map.
 
         If a tile is in the "visible" array, then draw it with the light colors.
         If it isn't, but it's in the explored array then use dark colors.

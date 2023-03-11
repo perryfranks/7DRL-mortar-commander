@@ -76,7 +76,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
         """
         calls the render functions for the different components of the game
         includes logic about placement of elements.
-        Components include the: map, message log, health bars and so on
+        Components include the: game_map, message log, health bars and so on
         :param console: tcod console that will handle lots of the heavy lifting
         :type console: Console (libtcod class)
         :return: None
@@ -85,7 +85,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
             self.game_map.render(console)
         except ValueError as e:
             print(
-                "ValueError raised when trying to render game map. This maybe because the map is bigger than the  "
+                "ValueError raised when trying to render game game_map. This maybe because the game_map is bigger than the  "
                 "console"
             )
             print(e)
