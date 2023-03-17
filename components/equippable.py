@@ -93,10 +93,6 @@ class BasicMortar(Equippable):
         return under_fire
 
 
-
-
-
-
 class Dagger(Equippable):
     def __init__(self) -> None:
         super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=2)

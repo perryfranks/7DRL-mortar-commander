@@ -77,3 +77,10 @@ FIRE_KEYS = {
     tcod.event.K_f,
     tcod.event.K_SPACE,
 }
+
+CURSOR_Y_KEYS = {
+    tcod.event.K_UP: -1,
+    tcod.event.K_DOWN: 1,
+    tcod.event.K_PAGEUP: -10,
+    tcod.event.K_PAGEDOWN: 10,
+}

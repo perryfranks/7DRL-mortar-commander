@@ -5,7 +5,7 @@ from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
-from entity import Actor, Item
+from entity import Actor, Item, Commander
 
 # New defines
 ##########################################################
@@ -38,7 +38,7 @@ basic_mortar = Item(
 # Old defines
 ##########################################################
 # Friendlies
-player = Actor(
+player = Commander(
     char="X",
     color=(255, 255, 255),
     name="Player",

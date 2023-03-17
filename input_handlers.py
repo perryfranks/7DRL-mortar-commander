@@ -21,7 +21,7 @@ from graphics import color
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Item, Actor
+    from entity import Item, Actor, Commander
 
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
@@ -409,18 +409,20 @@ class MortarAreaAttackHandler(SelectIndexHandler):
     """Handle firing a mortar shell."""
 
     def __init__(
-            self, engine: Engine, radius: int, mortar: BasicMortar, shell: BasicMortarShell
+            self, engine: Engine, radius: int, mortar: BasicMortar
     ):
         super().__init__(engine)
         self.mortar = mortar
-        self.shell = shell
 
     def on_render(self, console: tcod.Console) -> None:
         """Highlight tiles inside the mortar's range."""
         super().on_render(console)
         x, y = self.engine.mouse_location
-        console.tiles_rgb["bg"][x, y] = color.white
-        console.tiles_rgb["fg"][x, y] = color.black
+
+        tiles = self.mortar.under_fire(x, y, self.engine.game_map)
+        for tile in tiles:
+            console.tiles_rgb["bg"][tile] = color.white
+            console.tiles_rgb["fg"][tile] = color.black
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         return MainGameEventHandler(self.engine)
@@ -499,14 +501,6 @@ class GameOverEventHandler(EventHandler):
 
     def ev_quit(self, event: tcod.event.Quit) -> None:
         self.on_quit()
-
-
-CURSOR_Y_KEYS = {
-    tcod.event.K_UP: -1,
-    tcod.event.K_DOWN: 1,
-    tcod.event.K_PAGEUP: -10,
-    tcod.event.K_PAGEDOWN: 10,
-}
 
 
 class HistoryViewer(EventHandler):
@@ -624,18 +618,14 @@ class MainGameEventHandler(EventHandler):
 
     """
 
-    def use_mortar(self, engine: Engine, player: Actor) -> Optional[MortarAreaAttackHandler]:
+    def use_mortar(self, engine: Engine, commander: Commander) -> Optional[MortarAreaAttackHandler]:
         action = MortarAreaAttackHandler(
             self.engine,
-            self.get_mortar_range(player),
+            commander.get_mortar_range(),
+            commander.get_mortar(),
         )
-        return action
 
-    def get_mortar_range(self, player: Actor) -> int:
-        for i in player.inventory.items:
-            if isinstance(i.equippable, BasicMortar):
-                return i.equippable.get_range
-        return -1
+        return action
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         action: Optional[Action] = None
@@ -658,7 +648,7 @@ class MainGameEventHandler(EventHandler):
             action = WaitAction(player)
 
         elif key in key_actions.FIRE_KEYS:
-            action = self.use_mortar(self.engine, player=player)
+            action = self.use_mortar(self.engine, commander=player)
 
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit()
@@ -678,3 +668,13 @@ class MainGameEventHandler(EventHandler):
             return LookHandler(self.engine)
         # No valid key was pressed
         return action
+
+    # # Let's try and render the fire ability now
+    # # Note that we assume we were passed a commander since this is a player function
+    # def on_render(self, console: tcod.Console) -> None:
+    #     x, y = self.engine.mouse_location
+    #
+    #     tiles = self.engine.player.get_mortar().under_fire(x, y, self.engine.game_map)
+    #     for tile in tiles:
+    #         console.tiles_rgb["bg"][tile] = color.white
+    #         console.tiles_rgb["fg"][tile] = color.black

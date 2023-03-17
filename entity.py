@@ -4,6 +4,7 @@ import copy
 import math
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
+import components
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -27,15 +28,15 @@ class Entity:
     parent: Union[GameMap, Inventory]
 
     def __init__(
-        self,
-        parent: Optional[GameMap] = None,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: Tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        blocks_movement: bool = False,
-        render_order: RenderOrder = RenderOrder.CORPSE,
+            self,
+            parent: Optional[GameMap] = None,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            blocks_movement: bool = False,
+            render_order: RenderOrder = RenderOrder.CORPSE,
     ):
         self.x = x
         self.y = y
@@ -90,19 +91,20 @@ class Actor(Entity):
     Extension of Entity. Has ai, fighter, inventory, and level so on. These components do not need to be functional
     for all actors (enemies do not need working inventory and so on)
     """
+
     def __init__(
-        self,
-        *,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: Tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        ai_cls: Type[BaseAI],
-        equipment: Equipment,
-        fighter: Fighter,
-        inventory: Inventory,
-        level: Level,
+            self,
+            *,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            ai_cls: Type[BaseAI],
+            equipment: Equipment,
+            fighter: Fighter,
+            inventory: Inventory,
+            level: Level,
     ):
         super().__init__(
             x=x,
@@ -134,17 +136,32 @@ class Actor(Entity):
         return bool(self.ai)
 
 
+class Commander(Actor):
+    """A class specific to the Mortar Commander, mainly hosts mortar-actor specific functions."""
+
+    def get_mortar_range(self) -> int:
+        for i in self.inventory.items:
+            if isinstance(i.equippable, components.equippable.BasicMortar):
+                return i.equippable.get_range
+        return -1
+
+    def get_mortar(self) -> Optional[components.equippable.BasicMortar]:
+        for i in self.inventory.items:
+            if isinstance(i.equippable, components.equippable.BasicMortar):
+                return i.equippable
+
+
 class Item(Entity):
     def __init__(
-        self,
-        *,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: Tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        consumable: Optional[Consumable] = None,
-        equippable: Optional[Equippable] = None,
+            self,
+            *,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int, int, int] = (255, 255, 255),
+            name: str = "<Unnamed>",
+            consumable: Optional[Consumable] = None,
+            equippable: Optional[Equippable] = None,
     ):
         super().__init__(
             x=x,

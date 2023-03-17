@@ -13,7 +13,7 @@ import sys
 from message_log import MessageLog
 
 if TYPE_CHECKING:
-    from entity import Actor
+    from entity import Actor, Commander
     from game_map import GameMap, GameWorld
 
 
@@ -28,7 +28,7 @@ class Engine:
     game_map: GameMap
     game_world: GameWorld
 
-    def __init__(self, player: Actor, fov: bool = True):
+    def __init__(self, player: Commander, fov: bool = True):
         self.message_log = MessageLog()
         self.player = player
         self.mouse_location = (0, 0)

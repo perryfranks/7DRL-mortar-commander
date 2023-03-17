@@ -244,6 +244,8 @@ class PlayerMovementAction(ActionWithDirection):
         self.entity.move(self.dx, self.dy)
 
 
+
+
 class BumpAction(ActionWithDirection):
     """
     On perform this action checks self.target_class actor and attacks if so.
