@@ -64,6 +64,7 @@ class PickupSuppliesAction(Action):
     Base class for EnemyPickupSuppliesAction & FriendlyPickupSuppliesAction.
     Do not use this class itself.
     """
+
     def __init__(self, entity: Actor, supplies_value: int):
         super().__init__(entity)
         self.value = supplies_value
@@ -242,8 +243,6 @@ class PlayerMovementAction(ActionWithDirection):
             raise exceptions.Impossible("That way is blocked.")
 
         self.entity.move(self.dx, self.dy)
-
-
 
 
 class BumpAction(ActionWithDirection):

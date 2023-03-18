@@ -68,7 +68,7 @@ class BasicMortar(Equippable):
 
     def shoot(self) -> int:
         """
-        'Shoot' by checking whether mortar has moved and reset the condititons if so. Will return the range distance
+        'Shoot' by checking whether mortar has moved and reset the conditions if so. Will return the range distance
         in line with the range_increments
         :return: int for the cardinal distance of the explosive
         """
@@ -87,9 +87,10 @@ class BasicMortar(Equippable):
         used for highlighting all tiles in the area
         """
         under_fire = []
-        for map_x, map_y in game_map.width, game_map.height:
-            if helper.two_point_distance((x, y), (map_x, map_y)) < self.get_range:
-                under_fire.append((map_x, map_y))
+        for map_x in range(game_map.width):
+            for map_y in range(game_map.height):
+                if helper.two_point_distance(xy1=(x, y), xy2=(map_x, map_y)) < self.get_range:
+                    under_fire.append((map_x, map_y))
         return under_fire
 
 

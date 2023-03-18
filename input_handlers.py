@@ -425,6 +425,9 @@ class MortarAreaAttackHandler(SelectIndexHandler):
             console.tiles_rgb["fg"][tile] = color.black
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        print("mortar attack handler on index selected returned")
+        # this runs when we hit enter. Could this be used to do the attack?
+        # or to do the movement?
         return MainGameEventHandler(self.engine)
 
 
