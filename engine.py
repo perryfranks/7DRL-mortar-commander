@@ -110,6 +110,7 @@ Note that currently this calls handle_entity_turns and acts on all entities minu
         render_functions.render_names_at_mouse_location(
             console=console, x=21, y=44, engine=self
         )
+        render_functions.render_mortar_range(console=console, engine=self)
 
     def save_as(self, filename: str) -> None:
         """Save this Engine instance as a compressed file."""

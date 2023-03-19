@@ -59,3 +59,18 @@ def render_names_at_mouse_location(
     )
 
     console.print(x=x, y=y, string=names_at_mouse_location)
+
+
+def render_mortar_range(
+        console: Console, engine: Engine
+) -> None:
+    """
+    Render the current mortar's range to the screen. Having this run every render can be done
+    by calling this function from within the engine.
+    """
+    x, y = engine.player.x, engine.player.y
+    tiles = engine.player.get_mortar().under_fire(x, y, engine.game_map)
+
+    for tile in tiles:
+        console.tiles_rgb["bg"][tile] = color.white
+        console.tiles_rgb["fg"][tile] = color.black

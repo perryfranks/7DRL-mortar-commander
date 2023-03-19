@@ -103,6 +103,12 @@ class EventHandler(BaseEventHandler):
     def on_render(self, console: tcod.Console) -> None:
         self.engine.render(console)
 
+        x, y = self.engine.mouse_location
+
+        tiles = self.engine.player.get_mortar().under_fire(x, y, self.engine.game_map)
+        for tile in tiles:
+            console.tiles_rgb["bg"][tile] = color.white
+            console.tiles_rgb["fg"][tile] = color.black
 
 class AskUserEventHandler(EventHandler):
     """Handles user input for actions which require special input."""
@@ -672,12 +678,3 @@ class MainGameEventHandler(EventHandler):
         # No valid key was pressed
         return action
 
-    # # Let's try and render the fire ability now
-    # # Note that we assume we were passed a commander since this is a player function
-    # def on_render(self, console: tcod.Console) -> None:
-    #     x, y = self.engine.mouse_location
-    #
-    #     tiles = self.engine.player.get_mortar().under_fire(x, y, self.engine.game_map)
-    #     for tile in tiles:
-    #         console.tiles_rgb["bg"][tile] = color.white
-    #         console.tiles_rgb["fg"][tile] = color.black

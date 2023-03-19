@@ -8,7 +8,7 @@ import exceptions
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Actor, Entity, Item
+    from entity import Actor, Entity, Item, Commander
 
 
 class Action:
@@ -258,3 +258,13 @@ class BumpAction(ActionWithDirection):
 
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()
+
+class MortarAttackAction(ActionWithDirection):
+    """
+    Do the attack action of a mortar. Do damage, increment range, and us ammo
+    """
+    def perform(self) -> None:
+        commander: Commander =  self.entity # Commander
+        mortar = commander.get_mortar()
+
+        # is the actuall shoot code in basic mortar shell? it shouldn't be
