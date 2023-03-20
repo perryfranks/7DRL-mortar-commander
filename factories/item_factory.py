@@ -22,6 +22,7 @@ basic_mortar = Item(
         ]
     )
 )
+
 basic_mortar_shell = Item(
     char="S",
     color=graphics.our_colors.supplies,

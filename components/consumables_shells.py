@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import actions
-import input_handlers as ih
 from components.consumable import Consumable
-from entity import Actor
+
+if TYPE_CHECKING:
+    from entity import Actor
+    import input_handlers as ih
 
 
 class BasicMortarShell(Consumable):

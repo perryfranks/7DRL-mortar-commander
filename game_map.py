@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Set, Any
+from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Set
+
 import numpy as np  # type: ignore
 from tcod.console import Console
 
-import components.base_components
-from components.consumable import Consumable, Supplies
-# from entity import Actor, Item
 import tile_room_types
+from components.consumable import Consumable
 
 if TYPE_CHECKING:
     from engine import Engine

@@ -6,12 +6,10 @@ from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
 import tcod
 
-
 import exceptions
 import input.key_actions as key_actions
 from actions import (
     Action,
-    PickupAction,
     WaitAction,
     PlayerMovementAction,
     MortarAttackAction,
