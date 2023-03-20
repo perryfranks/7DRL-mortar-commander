@@ -6,7 +6,7 @@ from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
 import tcod
 
-import actions
+
 import exceptions
 import input.key_actions as key_actions
 from actions import (
@@ -15,6 +15,7 @@ from actions import (
     WaitAction,
     PlayerMovementAction,
     MortarAttackAction,
+    EquipAction, DropItem,
 )
 from factories.item_factory import basic_mortar_shell
 from graphics import color
@@ -342,7 +343,7 @@ class InventoryActivateHandler(InventoryEventHandler):
             # Return the action for the selected item.
             return item.consumable.get_action(self.engine.player)
         elif item.equippable:
-            return actions.EquipAction(self.engine.player, item)
+            return EquipAction(self.engine.player, item)
         else:
             return None
 
@@ -354,7 +355,7 @@ class InventoryDropHandler(InventoryEventHandler):
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         """Drop this item."""
-        return actions.DropItem(self.engine.player, item)
+        return DropItem(self.engine.player, item)
 
 
 class SelectIndexHandler(AskUserEventHandler):
@@ -545,8 +546,8 @@ class HistoryViewer(EventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[MainGameEventHandler]:
         # Fancy conditional movement to make it feel right.
-        if event.sym in CURSOR_Y_KEYS:
-            adjust = CURSOR_Y_KEYS[event.sym]
+        if event.sym in key_actions.CURSOR_Y_KEYS:
+            adjust = key_actions.CURSOR_Y_KEYS[event.sym]
             if adjust < 0 and self.cursor == 0:
                 # Only move from the top to the bottom when you're on the edge.
                 self.cursor = self.log_length - 1
@@ -641,40 +642,24 @@ class MainGameEventHandler(EventHandler):
         action: Optional[Action] = None
 
         key = event.sym
-        modifier = event.mod
-
         player = self.engine.player
-
-        if key == tcod.event.K_PERIOD and modifier & (
-                tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT
-        ):
-            return actions.TakeStairsAction(player)
 
         if key in key_actions.MOVE_KEYS:
             dx, dy = key_actions.MOVE_KEYS[key]
-            # action = BumpAction(player, dx, dy)
             action = PlayerMovementAction(player, dx, dy)
         elif key in key_actions.WAIT_KEYS:
             action = WaitAction(player)
-
         elif key in key_actions.FIRE_KEYS:
             # action = self.use_mortar(self.engine, commander=player)
             dx, dy = player.xy_pos
             shell = copy.deepcopy(basic_mortar_shell)
             action = MortarAttackAction(player, dx, dy, shell)
-
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit()
         elif key == tcod.event.K_v:
             return HistoryViewer(self.engine)
-
-        elif key == tcod.event.K_g:
-            action = PickupAction(player)
-
         elif key == tcod.event.K_i:
             return InventoryActivateHandler(self.engine)
-        elif key == tcod.event.K_d:
-            return InventoryDropHandler(self.engine)
         elif key == tcod.event.K_c:
             return CharacterScreenEventHandler(self.engine)
         elif key == tcod.event.K_SLASH:

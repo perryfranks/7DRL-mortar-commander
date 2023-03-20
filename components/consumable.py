@@ -9,12 +9,12 @@ import components.inventory
 #    SingleRangedAttackHandler,
 #    AreaRangedAttackHandler
 # )
-from input_handlers import ActionOrHandler
 # import components.ai
 from components.base_components import BaseComponent
 
 if TYPE_CHECKING:
     from entity import Actor, Item
+    from input_handlers import ActionOrHandler
 
 
 class Consumable(BaseComponent):

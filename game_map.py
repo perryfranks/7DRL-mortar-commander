@@ -6,12 +6,12 @@ from tcod.console import Console
 
 import components.base_components
 from components.consumable import Consumable, Supplies
-from entity import Actor, Item
+# from entity import Actor, Item
 import tile_room_types
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Entity
+    from entity import Entity, Actor, Item
 
 
 class GameMap:

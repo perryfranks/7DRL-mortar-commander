@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import List, Tuple, TYPE_CHECKING
 
 import helper
 from components.equippable import Equippable
-from entity import Item
 from equipment_types import EquipmentType
 from game_map import GameMap
+
+if TYPE_CHECKING:
+    from entity import Item
 
 
 class BasicMortar(Equippable):
