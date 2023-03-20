@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import os
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
@@ -13,15 +14,14 @@ from actions import (
     PickupAction,
     WaitAction,
     PlayerMovementAction,
-
+    MortarAttackAction,
 )
-from components.consumable import BasicMortarShell
-from components.equippable import BasicMortar
+from factories.item_factory import basic_mortar_shell
 from graphics import color
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Item, Actor, Commander
+    from entity import Item
 
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
@@ -109,6 +109,7 @@ class EventHandler(BaseEventHandler):
         for tile in tiles:
             console.tiles_rgb["bg"][tile] = color.white
             console.tiles_rgb["fg"][tile] = color.black
+
 
 class AskUserEventHandler(EventHandler):
     """Handles user input for actions which require special input."""
@@ -410,32 +411,32 @@ class SelectIndexHandler(AskUserEventHandler):
         """Called when an index is selected."""
         raise NotImplementedError()
 
-
-class MortarAreaAttackHandler(SelectIndexHandler):
-    """Handle firing a mortar shell."""
-
-    def __init__(
-            self, engine: Engine, radius: int, mortar: BasicMortar
-    ):
-        super().__init__(engine)
-        self.mortar = mortar
-
-    def on_render(self, console: tcod.Console) -> None:
-        """Highlight tiles inside the mortar's range."""
-        super().on_render(console)
-        x, y = self.engine.mouse_location
-
-        tiles = self.mortar.under_fire(x, y, self.engine.game_map)
-        for tile in tiles:
-            console.tiles_rgb["bg"][tile] = color.white
-            console.tiles_rgb["fg"][tile] = color.black
-
-    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
-        print("mortar attack handler on index selected returned")
-        # this runs when we hit enter. Could this be used to do the attack?
-        # or to do the movement?
-        return MainGameEventHandler(self.engine)
-
+#
+# class MortarAreaAttackHandler(SelectIndexHandler):
+#     """Handle firing a mortar shell."""
+#
+#     def __init__(
+#             self, engine: Engine, radius: int, mortar: BasicMortar
+#     ):
+#         super().__init__(engine)
+#         self.mortar = mortar
+#
+#     def on_render(self, console: tcod.Console) -> None:
+#         """Highlight tiles inside the mortar's range."""
+#         super().on_render(console)
+#         x, y = self.engine.mouse_location
+#
+#         tiles = self.mortar.under_fire(x, y, self.engine.game_map)
+#         for tile in tiles:
+#             console.tiles_rgb["bg"][tile] = color.white
+#             console.tiles_rgb["fg"][tile] = color.black
+#
+#     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+#         print("mortar attack handler on index selected returned")
+#         # this runs when we hit enter. Could this be used to do the attack?
+#         # or to do the movement?
+#         return MainGameEventHandler(self.engine)
+#
 
 class LookHandler(SelectIndexHandler):
     """Lets the player look around using the keyboard."""
@@ -627,14 +628,14 @@ class MainGameEventHandler(EventHandler):
 
     """
 
-    def use_mortar(self, engine: Engine, commander: Commander) -> Optional[MortarAreaAttackHandler]:
-        action = MortarAreaAttackHandler(
-            self.engine,
-            commander.get_mortar_range(),
-            commander.get_mortar(),
-        )
-
-        return action
+    # def use_mortar(self, engine: Engine, commander: Commander) -> Optional[MortarAttackAction]:
+    #     # action = MortarAreaAttackHandler(
+    #     #     self.engine,
+    #     #     commander.get_mortar_range(),
+    #     #     commander.get_mortar(),
+    #     # )
+    #
+    #     return MortarAttackAction(player, )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         action: Optional[Action] = None
@@ -657,7 +658,10 @@ class MainGameEventHandler(EventHandler):
             action = WaitAction(player)
 
         elif key in key_actions.FIRE_KEYS:
-            action = self.use_mortar(self.engine, commander=player)
+            # action = self.use_mortar(self.engine, commander=player)
+            dx, dy = player.xy_pos
+            shell = copy.deepcopy(basic_mortar_shell)
+            action = MortarAttackAction(player, dx, dy, shell)
 
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit()
@@ -677,4 +681,3 @@ class MainGameEventHandler(EventHandler):
             return LookHandler(self.engine)
         # No valid key was pressed
         return action
-

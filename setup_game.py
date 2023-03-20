@@ -7,15 +7,15 @@ from typing import Optional
 
 import tcod
 
-import entity_factories
+import factories.actor_factory
+import factories.item_factory
 import input_handlers
 from config import SAVE_LOCATION
 from engine import Engine
 from entity import Actor
-# from game_map import GameWorld
 from game_world import GameWorld
 from graphics import color
-from graphics.titles import get_welcome_message, TITLE, CREDITS, title_multiline
+from graphics.titles import get_welcome_message, TITLE, CREDITS
 from save_functions import load_game
 
 # Load the background image and remove the alpha channel.
@@ -37,7 +37,7 @@ def game_specific_setup(player: Actor) -> None:
     :rtype: None
     """
 
-    mortar = copy.deepcopy(entity_factories.basic_mortar)
+    mortar = copy.deepcopy(factories.item_factory.basic_mortar)
     mortar.parent = player.inventory
     player.inventory.items.append(mortar)
     player.equipment.toggle_equip(mortar, add_message=False)
@@ -68,7 +68,7 @@ def new_game(
     :returns: the Engine object to run the game
     """
 
-    player = copy.deepcopy(entity_factories.player)
+    player = copy.deepcopy(factories.actor_factory.player)
 
     engine = Engine(player=player)
 

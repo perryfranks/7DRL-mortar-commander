@@ -5,7 +5,7 @@ or other items that are mostly text strings mostly just printed to the user
 import random
 
 TITLE = "MORTAR COMMAND"
-# Unfortunatly this doesn't render correctly for me. Will shelve for now
+# Unfortunately this doesn't render correctly for me. Will shelve for now
 title_multiline = [
     "  __  __         _               ___                              _ ",
     " |  \\/  |___ _ _| |_ __ _ _ _   / __|___ _ __  _ __  __ _ _ _  __| |",
@@ -38,5 +38,10 @@ welcome_messages = [
 
 
 def get_welcome_message() -> str:
+    """
+    Get a randomised welcome message. Messages are taken from the welcome_messages array.
+    The length is not hard coded.
+    :return: welcome message as a plaintext string
+    """
     index = random.randint(0, len(welcome_messages) - 1)
     return welcome_messages[index]

@@ -5,6 +5,7 @@ import math
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 import components
+import components.consumables_mortars
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -49,6 +50,10 @@ class Entity:
             # If parent isn't provided now then it will be set later.
             self.parent = parent
             parent.entities.add(self)
+
+    @property
+    def xy_pos(self) -> Tuple[int, int]:
+        return self.x, self.y
 
     @property
     def gamemap(self) -> GameMap:
@@ -141,13 +146,13 @@ class Commander(Actor):
 
     def get_mortar_range(self) -> int:
         for i in self.inventory.items:
-            if isinstance(i.equippable, components.equippable.BasicMortar):
+            if isinstance(i.equippable, components.consumables_mortars.BasicMortar):
                 return i.equippable.get_range
         return -1
 
-    def get_mortar(self) -> Optional[components.equippable.BasicMortar]:
+    def get_mortar(self) -> Optional[components.consumables_mortars.BasicMortar]:
         for i in self.inventory.items:
-            if isinstance(i.equippable, components.equippable.BasicMortar):
+            if isinstance(i.equippable, components.consumables_mortars.BasicMortar):
                 return i.equippable
 
 

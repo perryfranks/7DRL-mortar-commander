@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Optional, Tuple, TYPE_CHECKING
 
+import exceptions
 from components import consumable
 from graphics import color
-import exceptions
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -259,12 +259,30 @@ class BumpAction(ActionWithDirection):
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()
 
+
 class MortarAttackAction(ActionWithDirection):
     """
     Do the attack action of a mortar. Do damage, increment range, and us ammo
     """
+
+    def __init__(self, entity: Actor, dx: int, dy: int, shell_item: consumable.Consumable):
+        super().__init__(entity, dx, dy)
+        self.shell = shell_item
+
     def perform(self) -> None:
-        commander: Commander =  self.entity # Commander
+        commander: Commander = self.entity  # Commander
         mortar = commander.get_mortar()
 
-        # is the actuall shoot code in basic mortar shell? it shouldn't be
+        # is the actually shoot code in basic mortar shell? it shouldn't be
+        # We should replace this by getting the shell the player has
+
+        i_action = ItemAction(
+            entity=self.entity,
+            item=shell,
+            target_xy=self.entity.xy_pos
+        )
+
+        shell.activate(i_action)
+
+        # This doesn't use the random fire yet so yeah
+        # If we can string everything together we can probably get things working

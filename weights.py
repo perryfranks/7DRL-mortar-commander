@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Dict, List, Tuple, TYPE_CHECKING
 
-import entity_factories
+import factories.actor_factory
+import factories.fantasy_entity_factory
+import factories.item_factory
 
 if TYPE_CHECKING:
     from entity import Entity
@@ -19,15 +21,15 @@ max_monsters_by_floor = [
 ]
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.supplies, 35)],
-    2: [(entity_factories.supplies, 10)],
-    4: [(entity_factories.supplies, 25), (entity_factories.supplies, 5)],
-    6: [(entity_factories.supplies, 25), (entity_factories.supplies, 15)],
+    0: [(factories.item_factory.supplies, 35)],
+    2: [(factories.item_factory.supplies, 10)],
+    4: [(factories.item_factory.supplies, 25), (factories.item_factory.supplies, 5)],
+    6: [(factories.item_factory.supplies, 25), (factories.item_factory.supplies, 15)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],
-    3: [(entity_factories.troll, 15)],
-    5: [(entity_factories.troll, 30)],
-    7: [(entity_factories.troll, 60)],
+    0: [(factories.actor_factory.scav, 80)],
+    3: [(factories.fantasy_entity_factory.troll, 15)],
+    5: [(factories.fantasy_entity_factory.troll, 30)],
+    7: [(factories.fantasy_entity_factory.troll, 60)],
 }

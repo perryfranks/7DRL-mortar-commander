@@ -40,7 +40,7 @@ def new_tile(
 
 
 # SHROUD represents unexplored tiles
-SHROUD = np.array((ord(" "), (255, 255, 255), (0,0,0)), dtype=graphic_dt)
+SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
 
 floor = new_tile(
     walkable=True,
@@ -78,6 +78,7 @@ down_stairs = new_tile(
     dark=(ord(">"), (0, 0, 100), (50, 50, 150)),
     light=(ord(">"), (255, 255, 255), (200, 180, 50)),
 )
+
 
 class RoomTypes(Enum):
     REGULAR = auto()
