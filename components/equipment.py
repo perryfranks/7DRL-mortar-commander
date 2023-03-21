@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 
 from components.base_components import BaseComponent
-from equipment_types import EquipmentType
+from components.equipment_types import EquipmentType
 
 if TYPE_CHECKING:
     from entity import Actor, Item
@@ -54,28 +54,34 @@ class Equipment(BaseComponent):
         )
 
     def equip_to_slot(self, slot: str, item: Item, add_message: bool) -> None:
-        current_item = getattr(self, slot)
+        try:
+            current_item = getattr(self, slot)
 
-        if current_item is not None:
-            self.unequip_from_slot(slot, add_message)
+            if current_item is not None:
+                self.unequip_from_slot(slot, add_message)
 
-        setattr(self, slot, item)
+            setattr(self, slot, item)
 
-        if add_message:
-            self.equip_message(item.name)
+            if add_message:
+                self.equip_message(item.name)
+        except AttributeError:
+            return None
 
     def unequip_from_slot(self, slot: str, add_message: bool) -> None:
-        current_item = getattr(self, slot)
+        try:
+            current_item = getattr(self, slot)
 
-        if add_message:
-            self.unequip_message(current_item.name)
+            if add_message:
+                self.unequip_message(current_item.name)
 
-        setattr(self, slot, None)
+            setattr(self, slot, None)
+        except AttributeError:
+            return None
 
     def toggle_equip(self, equippable_item: Item, add_message: bool = True) -> None:
         if (
-            equippable_item.equippable
-            and equippable_item.equippable.equipment_type == EquipmentType.WEAPON
+                equippable_item.equippable
+                and equippable_item.equippable.equipment_type == EquipmentType.WEAPON
         ):
             slot = "weapon"
         else:

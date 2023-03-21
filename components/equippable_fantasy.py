@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from components.equippable import Equippable
-from equipment_types import EquipmentType
+from components.equipment_types import EquipmentType
 
 
 class Dagger(Equippable):
