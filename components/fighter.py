@@ -35,7 +35,7 @@ class Fighter(BaseComponent):
 
     @property
     def power(self) -> int:
-        return self.base_power + self.base_power
+        return self.base_power + self.power_bonus
 
     @property
     def defense_bonus(self) -> int:
@@ -66,7 +66,7 @@ class Fighter(BaseComponent):
         return amount_recovered
 
     def take_damage(self, amount: int) -> None:
-        self.hp -= amount
+        self.hp -= amount   # setting the hp triggers the die event
 
     def die(self) -> None:
         if self.engine.player is self.parent:

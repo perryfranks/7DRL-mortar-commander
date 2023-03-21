@@ -53,6 +53,14 @@ class BaseAI(Action):
             return [(index[0], index[1]) for index in path]
 
 
+class DudAi(BaseAI):
+    """
+    AI that does nothing. Just to make it more obvious when assigned to entities.
+    """
+    def perform(self) -> None:
+        pass
+
+
 class HostileEnemy(BaseAI):
     """
         Defines basic enemy actions of moving to the player. If the player is within 1 tile attack them
@@ -117,8 +125,8 @@ class EnemySupplyScavenger(HostileEnemy):
         # Grab them if they are within reach
         target = self.engine.game_map.get_closest_consumable(
             self.entity, components.consumable.Supplies
-            )
-        #target = self.get_target()  # this also gets the chebyshev dist
+        )
+        # target = self.get_target()  # this also gets the chebyshev dist
         if target is None:
             return None
 
