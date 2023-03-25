@@ -8,9 +8,11 @@ from tcod.console import Console
 import tile_room_types
 from components.consumable import Consumable
 
+from entity import Entity, Actor, Item
+
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Entity, Actor, Item
+    # from entity import Entity, Actor, Item
 
 
 class GameMap:

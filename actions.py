@@ -265,9 +265,9 @@ class MortarAttackAction(ActionWithDirection):
     Do the attack action of a mortar. Do damage, increment range, and us ammo
     """
 
-    def __init__(self, entity: Actor, dx: int, dy: int, shell_item: consumable.Consumable):
+    def __init__(self, entity: Actor, dx: int, dy: int, shell_item: Item):
         super().__init__(entity, dx, dy)
-        self.shell = shell_item
+        self.shell_item = shell_item
 
     def perform(self) -> None:
         commander: Commander = self.entity  # Commander
@@ -278,11 +278,11 @@ class MortarAttackAction(ActionWithDirection):
 
         i_action = ItemAction(
             entity=self.entity,
-            item=shell,
+            item=self.shell_item,
             target_xy=self.entity.xy_pos
         )
 
-        shell.activate(i_action)
+        self.shell_item.consumable.activate(i_action)
 
         # This doesn't use the random fire yet so yeah
         # If we can string everything together we can probably get things working

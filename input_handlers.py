@@ -20,7 +20,7 @@ from graphics import color
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Item
+    from entity import Item, Commander
 
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 """An event handler return value which can trigger an action or switch active handlers.
@@ -410,6 +410,7 @@ class SelectIndexHandler(AskUserEventHandler):
         """Called when an index is selected."""
         raise NotImplementedError()
 
+
 #
 # class MortarAreaAttackHandler(SelectIndexHandler):
 #     """Handle firing a mortar shell."""
@@ -635,6 +636,10 @@ class MainGameEventHandler(EventHandler):
     #     # )
     #
     #     return MortarAttackAction(player, )
+    def bad_shell_setup(self, player: Commander) -> Tuple[Commander, Item]:
+        shell = copy.deepcopy(basic_mortar_shell)
+        player.inventory.items.append(shell)
+        return player, shell
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         action: Optional[Action] = None
@@ -650,7 +655,8 @@ class MainGameEventHandler(EventHandler):
         elif key in key_actions.FIRE_KEYS:
             # action = self.use_mortar(self.engine, commander=player)
             dx, dy = player.xy_pos
-            shell = copy.deepcopy(basic_mortar_shell)
+            # shell = copy.deepcopy(basic_mortar_shell)
+            player, shell = self.bad_shell_setup(player=player)
             action = MortarAttackAction(player, dx, dy, shell)
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit()
