@@ -11,8 +11,6 @@ from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
 
-
-
 supplies_value = 4
 
 
@@ -52,16 +50,11 @@ def kitted_w_supplies(fully_kitted_entity) -> Actor:
     return fully_kitted_entity
 
 
-def test_consumable():
-    assert False
-
-
 def test_is_supplies(supplies):
     assert supplies.is_supplies is True
 
 
 def test_supplies_activate(fully_kitted_entity, supplies):
-
     supplies_item = Item(
         char="!",
         name="Supplies",

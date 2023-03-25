@@ -25,18 +25,29 @@ class BasicMortar(Equippable):
     range_increments: List[Tuple[int, int]]
     prev_xy = Tuple[int, int]
 
-    def __init__(self, range_increments: List[Tuple[int, int]]) -> None:
+    def __init__(self, range_increments: List[Tuple[int, int]], xy: Tuple[int, int] = (0, 0)) -> None:
+
         super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=2)
         # [count (accumulative), range]
         self.range_increments = range_increments
-        self.shot_count = 0
+        self._shot_count = 0
+        self.prev_xy = xy
 
-    def second_init(self):
+    def update_xy(self):
         self.prev_xy = self.parent.x, self.parent.y
 
     @property
     def has_moved(self) -> bool:
+        """Beware that this is checking the mortar item that has this as a consumable as the parent"""
         return self.prev_xy[0] != self.parent.x or self.prev_xy[1] != self.parent.y
+
+    @property
+    def shot_count(self) -> int:
+        return self._shot_count
+
+    @shot_count.setter
+    def shot_count(self, value: int) -> None:
+        self._shot_count = max(0, value)
 
     @property
     def get_range(self) -> int:
@@ -45,11 +56,15 @@ class BasicMortar(Equippable):
         For that use shoot().
         :return: int for the cardinal distance of the explosive
         """
-        for i in self.range_increments:
-            if self.shot_count <= i[0]:
-                return i[1]
-        # max range
-        return self.range_increments[-1][1]
+        # for i in self.range_increments:
+        #     if self.shot_count <= i[0]:
+        #         return i[1]
+        # # max range
+        # return self.range_increments[-1][1]
+        #
+        for i in range(len(self.range_increments)):
+            if i == len(self.range_increments) - 1 or self.range_increments[i + 1][0] > self.shot_count:
+                return self.range_increments[i][1]
 
     def shoot(self) -> int:
         """
@@ -57,11 +72,13 @@ class BasicMortar(Equippable):
         in line with the range_increments
         :return: int for the cardinal distance of the explosive
         """
-        print("basic mortar item.shoot() called")
         if self.has_moved:
             self.shot_count = 1  # Reset and then increment
         else:
             self.shot_count += 1
+
+        # update prev_xy
+        self.update_xy()
         return self.get_range
 
     def under_fire(self, x: int, y: int, game_map: GameMap) -> List[Tuple[int, int]]:

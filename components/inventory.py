@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from entity import Actor, Item
 
 
-# inventory capacity is inforced in actions.py which I don't know if I like
+# inventory capacity is enforced in actions.py which I don't know if I like
 class Inventory(BaseComponent):
     parent: Actor
 
